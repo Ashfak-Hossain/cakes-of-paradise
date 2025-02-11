@@ -1,0 +1,28 @@
+import type { Metadata } from 'next';
+import './globals.css';
+import { geistMono, geistSans } from '@/lib/font';
+import Providers from '@/components/providers/Providers';
+import DashboardLayout from '@/app/Wrapper';
+
+export const metadata: Metadata = {
+  title: 'Cakes of Paradise',
+  description: 'The best cakes in the world',
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <Providers>
+          <DashboardLayout>{children}</DashboardLayout>
+        </Providers>
+      </body>
+    </html>
+  );
+}
