@@ -1,20 +1,13 @@
 'use client';
 
-import {
-  Archive,
-  CircleDollarSign,
-  Clipboard,
-  Layout,
-  Menu,
-  SlidersHorizontal,
-  User,
-} from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { setIsSidebarCollapsed } from '@/redux/features/global/global';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import SidebarLink from './SidebarLink';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { sidebarLinks } from '@/lib/sidebarLink';
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
@@ -66,43 +59,15 @@ const Sidebar = () => {
 
       {/* Sidebar Links */}
       <div className="flex-grow mt-8">
-        {/* Links */}
-        <SidebarLink
-          href="/dashboard"
-          icon={Layout}
-          label="Dashboard"
-          isCollapsed={isSidebarCollapsed}
-        />
-        <SidebarLink
-          href="/inventory"
-          icon={Archive}
-          label="Inventory"
-          isCollapsed={isSidebarCollapsed}
-        />
-        <SidebarLink
-          href="/products"
-          icon={Clipboard}
-          label="Products"
-          isCollapsed={isSidebarCollapsed}
-        />
-        <SidebarLink
-          href="/users"
-          icon={User}
-          label="Users"
-          isCollapsed={isSidebarCollapsed}
-        />
-        <SidebarLink
-          href="/settings"
-          icon={SlidersHorizontal}
-          label="Settings"
-          isCollapsed={isSidebarCollapsed}
-        />
-        <SidebarLink
-          href="/expenses"
-          icon={CircleDollarSign}
-          label="Expenses"
-          isCollapsed={isSidebarCollapsed}
-        />
+        {sidebarLinks.map((link, i) => (
+          <SidebarLink
+            key={i}
+            href={link.href}
+            icon={link.icon}
+            label={link.label}
+            isCollapsed={isSidebarCollapsed}
+          />
+        ))}
       </div>
 
       {/* Footer */}
