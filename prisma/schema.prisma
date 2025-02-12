@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  customer_id        Int       @id @default(autoincrement())
+  first_name         String
+  last_name          String
+  phone              String    @unique
+  email              String?
+  address            String?
+  created_at         DateTime  @default(now())
+  last_purchase_date DateTime?
+
+  orders Order[]
+}
+
+model Supplier {
+  supplier_id          Int     @id @default(autoincrement())
+  supplier_name        String
+  contact_name         String?
+  phone                String
+  email                String?
+  supplied_ingredients Json? // JSON field for ingredients list
+  payment_terms        String?
+
+  ingredients Ingredient[]
+  purchases   Purchase[]
+}
+
+model Ingredient {
+  ingredient_id   Int       @id @default(autoincrement())
+  ingredient_name String    @unique
+  unit_of_measure String // kg, liter, packet, etc.
+  current_stock   Decimal   @default(0)
+  reorder_level   Decimal?
+  supplier_id     Int?
+  supplier        Supplier? @relation(fields: [supplier_id], references: [supplier_id])
+
+  productIngredients ProductIngredient[]
+  inventoryLogs      InventoryLog[]
+  purchases          Purchase[]
+}
+
+model Product {
+  product_id   Int      @id @default(autoincrement())
+  product_name String
+  description  String?
+  category     String // cake, pastry, cookies, etc.
+  price        Decimal
+  cost_to_make Decimal
+  is_available Boolean  @default(true)
+  created_at   DateTime @default(now())
+
+  productIngredients ProductIngredient[]
+  orderDetails       OrderDetail[]
+}
+
+model ProductIngredient {
+  product_id    Int
+  ingredient_id Int
+  quantity      Decimal
+
+  product    Product    @relation(fields: [product_id], references: [product_id])
+  ingredient Ingredient @relation(fields: [ingredient_id], references: [ingredient_id])
+
+  @@id([product_id, ingredient_id]) // Composite primary key
+}
+
+model Order {
+  order_id       Int      @id @default(autoincrement())
+  customer_id    Int?
+  order_date     DateTime @default(now())
+  total_amount   Decimal
+  payment_method String?
+  status         String   @default("pending")
+
+  customer     Customer?     @relation(fields: [customer_id], references: [customer_id])
+  orderDetails OrderDetail[]
+}
+
+model OrderDetail {
+  order_detail_id Int     @id @default(autoincrement())
+  order_id        Int
+  product_id      Int
+  quantity        Int
+  unit_price      Decimal
+  total_price     Decimal
+
+  order   Order   @relation(fields: [order_id], references: [order_id])
+  product Product @relation(fields: [product_id], references: [product_id])
+}
+
+model Purchase {
+  purchase_id   Int      @id @default(autoincrement())
+  supplier_id   Int
+  ingredient_id Int
+  quantity      Decimal
+  unit_cost     Decimal
+  total_cost    Decimal
+  purchase_date DateTime @default(now())
+
+  supplier   Supplier   @relation(fields: [supplier_id], references: [supplier_id])
+  ingredient Ingredient @relation(fields: [ingredient_id], references: [ingredient_id])
+}
+
+model InventoryLog {
+  log_id         Int      @id @default(autoincrement())
+  ingredient_id  Int
+  change_amount  Decimal
+  log_date       DateTime @default(now())
+  reference_type String // 'purchase' or 'order'
+  reference_id   Int?
+
+  ingredient Ingredient @relation(fields: [ingredient_id], references: [ingredient_id])
+}
