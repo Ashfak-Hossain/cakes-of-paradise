@@ -98,16 +98,21 @@ model OrderDetail {
 
 model Purchase {
   purchase_id   Int      @id @default(autoincrement())
-  supplier_id   Int
+  supplier_id   Int?
   ingredient_id Int
   quantity      Decimal
   unit_cost     Decimal
   total_cost    Decimal
   purchase_date DateTime @default(now())
 
-  supplier   Supplier   @relation(fields: [supplier_id], references: [supplier_id])
+  supplier   Supplier?  @relation(fields: [supplier_id], references: [supplier_id])
   ingredient Ingredient @relation(fields: [ingredient_id], references: [ingredient_id])
 }
+
+// enum reference_type {
+//   purchase
+//   order
+// }
 
 model InventoryLog {
   log_id         Int      @id @default(autoincrement())

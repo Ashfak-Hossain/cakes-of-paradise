@@ -1,6 +1,9 @@
 import { Metadata } from 'next';
 import { columns } from '@/components/inventory/columns';
 import { DataTable } from '@/components/data-table/data-table';
+import IngredientForm from '@/components/inventory/IngredientForm';
+import { Separator } from '@/components/ui/separator';
+import SectionHeader from '@/components/common/SectionHeader';
 
 export const metadata: Metadata = {
   title: 'Inventory Management',
@@ -32,27 +35,19 @@ const page = async () => {
 
   data.forEach(
     (item: { supplier_name: string; supplier: { supplier_name: string } }) => {
-      item.supplier_name = item.supplier.supplier_name;
+      item.supplier_name = item.supplier ? item.supplier.supplier_name : 'N/A';
     }
   );
 
   return (
     <div className="flex h-full flex-1 flex-col space-y-8 p-8">
-      <div className="flex items-center justify-between space-y-2">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">
-            Inventory Management
-          </h2>
-          <p className="text-muted-foreground">
-            Here&apos;s a list of all the ingredients in your inventory.
-          </p>
-        </div>
-        <div className="flex items-center space-x-2">{/* <UserNav /> */}</div>
-      </div>
+      <SectionHeader
+        title="Inventory Management"
+        subtitle="Here's a list of all the ingredients in your inventory."
+      />
       <DataTable data={data} columns={columns} />
-      <div>
-        <button className="btn">Add Ingredient</button>
-      </div>
+      <Separator />
+      <IngredientForm />
     </div>
   );
 };

@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import SidebarLink from './SidebarLink';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { sidebarLinks } from '@/lib/sidebarLink';
+import { sidebarLinks } from '@/lib/constants';
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();

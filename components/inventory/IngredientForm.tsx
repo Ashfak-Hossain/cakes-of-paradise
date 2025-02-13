@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/select';
 import { measurement_units } from '@/lib/constants';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 const defaultValues: Partial<Ingredient> = {
   ingredient_name: '',
@@ -37,16 +38,35 @@ const IngredientForm = () => {
   const form = useForm<Ingredient>({
     resolver: zodResolver(ingredientSchema),
     defaultValues,
-    mode: 'onChange',
+    mode: 'onBlur',
   });
 
-  const onSubmit = (data: Ingredient) => {
-    console.log(data);
-    toast.success('Ingredient added successfully');
+  const onSubmit = async (data: Ingredient) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/inventory`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        }
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to add ingredient');
+      }
+      toast.success('Ingredient added successfully!');
+      form.reset();
+    } catch (error) {
+      console.error('Error adding ingredient:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Something went wrong!';
+      toast.error(errorMessage);
+    }
   };
 
   return (
-    <div className="flex flex-col space-y-4 border border-dashed border-gray-200 rounded-lg p-4">
+    <div className="flex flex-col space-y-4 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-900">
       <SectionHeader
         title="Add Ingredients"
         subtitle="Add new ingredients to your inventory."
@@ -54,7 +74,7 @@ const IngredientForm = () => {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
             {/* Left Column */}
             <div className="space-y-4">
               {/* Name */}
@@ -63,13 +83,17 @@ const IngredientForm = () => {
                 name="ingredient_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
+                    <FormLabel className="text-gray-900 dark:text-gray-200">
                       Ingredient Name <span className="text-red-500">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="Eggs..." {...field} />
+                      <Input
+                        placeholder="Eggs..."
+                        className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
+                        {...field}
+                      />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-gray-600 dark:text-gray-400">
                       The name of the ingredient you want to add.
                     </FormDescription>
                     <FormMessage />
@@ -83,19 +107,19 @@ const IngredientForm = () => {
                 name="stock"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      Stock
-                      <span className="text-red-500">*</span>
+                    <FormLabel className="text-gray-900 dark:text-gray-200">
+                      Stock <span className="text-red-500">*</span>
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         placeholder="0"
+                        className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                       />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-gray-600 dark:text-gray-400">
                       Stock of the ingredient you want to add.
                     </FormDescription>
                     <FormMessage />
@@ -109,19 +133,19 @@ const IngredientForm = () => {
                 name="cost"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      Cost
-                      <span className="text-red-500">*</span>
+                    <FormLabel className="text-gray-900 dark:text-gray-200">
+                      Cost <span className="text-red-500">*</span>
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         placeholder="0"
+                        className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                       />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-gray-600 dark:text-gray-400">
                       The cost of the ingredient.
                     </FormDescription>
                     <FormMessage />
@@ -138,7 +162,7 @@ const IngredientForm = () => {
                 name="unit_of_measure"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
+                    <FormLabel className="text-gray-900 dark:text-gray-200">
                       Unit of Measure <span className="text-red-500">*</span>
                     </FormLabel>
                     <Select
@@ -146,11 +170,11 @@ const IngredientForm = () => {
                       value={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700">
                           <SelectValue placeholder="Select unit" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                         {measurement_units.map((unit) => (
                           <SelectItem key={unit.value} value={unit.value}>
                             {unit.label}
@@ -158,7 +182,7 @@ const IngredientForm = () => {
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormDescription>
+                    <FormDescription className="text-gray-600 dark:text-gray-400">
                       The unit of measure for the ingredient.
                     </FormDescription>
                     <FormMessage />
@@ -172,16 +196,19 @@ const IngredientForm = () => {
                 name="reorder_level"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Reorder Level</FormLabel>
+                    <FormLabel className="text-gray-900 dark:text-gray-200">
+                      Reorder Level
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         placeholder="0"
+                        className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                       />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-gray-600 dark:text-gray-400">
                       The reorder level for the ingredient.
                     </FormDescription>
                     <FormMessage />
@@ -191,24 +218,51 @@ const IngredientForm = () => {
 
               {/* Supplier */}
               {/* <FormField
-            control={form.control}
-            name="supplier_id"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Supplier</FormLabel>
-                <FormControl>
-                 
-                </FormControl>
-                <FormDescription>
-                  The supplier of the ingredient.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
+                control={form.control}
+                name="supplier_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-900 dark:text-gray-200">
+                      Supplier
+                    </FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(value)}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700">
+                          <SelectValue placeholder="Select Supplier" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+                        <SelectItem value="1">Supplier 1</SelectItem>
+                        <SelectItem value="2">Supplier 2</SelectItem>
+                        <SelectItem value="3">Supplier 3</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription className="text-gray-600 dark:text-gray-400">
+                      The supplier of the ingredient.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              /> */}
             </div>
           </div>
-          <Button type="submit">Add Ingredient</Button>
+
+          <Button
+            type="submit"
+            className="bg-gray-900 hover:bg-gray-800 dark:bg-blue-500 dark:hover:bg-blue-600 text-white flex items-center gap-2"
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isLoading ? (
+              <>
+                <Loader2 className="animate-spin w-5 h-5" /> Adding...
+              </>
+            ) : (
+              'Add Ingredient'
+            )}
+          </Button>
         </form>
       </Form>
     </div>

@@ -3,6 +3,7 @@ import './globals.css';
 import { geistMono, geistSans } from '@/lib/font';
 import Providers from '@/components/providers/Providers';
 import DashboardLayout from '@/app/Wrapper';
+import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
   title: 'Cakes of Paradise',
@@ -21,6 +22,7 @@ export default function RootLayout({
       >
         <Providers>
           <DashboardLayout>{children}</DashboardLayout>
+          <Toaster />
         </Providers>
       </body>
     </html>
