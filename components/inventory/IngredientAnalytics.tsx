@@ -69,10 +69,12 @@ const IngredientAnalytics = ({ data }: IngredientAnalyticsProps) => {
     DateRange | undefined
   >(undefined);
   const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
+  const [filteredChartData, setFilteredChartData] = useState<chartData[]>([]);
 
   useEffect(() => {
     if (selectedIngredientId === null) {
       setChartData([]);
+      setFilteredChartData([]);
       return;
     }
 
@@ -82,8 +84,10 @@ const IngredientAnalytics = ({ data }: IngredientAnalyticsProps) => {
 
     if (!selectedIngredient) {
       setChartData([]);
+      setFilteredChartData([]);
       return;
     }
+
     setSelectedUnit(selectedIngredient.unit_of_measure);
 
     const aggregatedData = selectedIngredient.purchases.reduce(
@@ -107,9 +111,26 @@ const IngredientAnalytics = ({ data }: IngredientAnalyticsProps) => {
       return dateA.getTime() - dateB.getTime();
     });
 
-    console.log('Aggregated Data:', aggregatedData);
     setChartData(aggregatedData);
+    setFilteredChartData(aggregatedData);
   }, [selectedIngredientId, data]);
+
+  useEffect(() => {
+    if (selectedDateRange?.from && selectedDateRange?.to) {
+      const filteredData = chartData.filter((entry) => {
+        const entryDate = parse(entry.date, 'yyyy-MM-dd', new Date());
+        return (
+          selectedDateRange?.from &&
+          selectedDateRange?.to &&
+          entryDate.getTime() >= selectedDateRange.from.getTime() &&
+          entryDate.getTime() <= selectedDateRange.to.getTime()
+        );
+      });
+      setFilteredChartData(filteredData); // Update the filtered data state
+    } else {
+      setFilteredChartData(chartData); // Show all data if no date range is selected
+    }
+  }, [selectedDateRange, chartData]);
 
   const handleSelectChange = (value: string) => {
     const selectedId = Number(value);
@@ -124,12 +145,6 @@ const IngredientAnalytics = ({ data }: IngredientAnalyticsProps) => {
 
   const handleDateRangeChange = (date: DateRange | undefined) => {
     setSelectedDateRange(date);
-    console.log('Selected Date Range:', date);
-    if (date?.from && date?.to) {
-      const startDate = date.from;
-      const endDate = date.to;
-      // ... use startDate and endDate for your data fetching or filtering
-    }
   };
 
   const chartConfig = {
@@ -189,7 +204,7 @@ const IngredientAnalytics = ({ data }: IngredientAnalyticsProps) => {
             >
               <BarChart
                 accessibilityLayer
-                data={chartData}
+                data={filteredChartData}
                 margin={{
                   top: 25,
                   left: 12,

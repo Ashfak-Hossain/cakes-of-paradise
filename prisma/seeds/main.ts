@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
+import { addMonths } from 'date-fns';
 
 const prisma = new PrismaClient();
 
@@ -146,10 +147,10 @@ async function seed() {
     });
     await prisma.orderDetail.createMany({ data: orderDetails });
 
-    // 8. Create Purchases (Integer quantities, longer history)
+    // 8. Create Purchases (Integer quantities, history for last 3 months)
     const purchases = [];
-    const startDate = new Date('2022-01-01'); // Start of the date range (adjust as needed)
-    const endDate = new Date('2024-01-01'); // End of the date range
+    const endDate = new Date(); // Today
+    const startDate = addMonths(endDate, -3); // 3 months ago
     const timeDiff = endDate.getTime() - startDate.getTime();
 
     const numPurchases = 1000; // Increased number of purchases for longer history
@@ -174,7 +175,7 @@ async function seed() {
         ingredient_id: randomIngredient.ingredient_id,
         quantity: quantity,
         unit_cost: faker.number.float({ min: 1, max: 10 }),
-        total_cost: quantity * faker.number.float({ min: 1, max: 10 }), // Corrected calculation
+        total_cost: quantity * faker.number.float({ min: 1, max: 10 }),
         purchase_date: randomPurchaseDate,
       });
     }
@@ -185,10 +186,10 @@ async function seed() {
     for (const purchase of purchases) {
       inventoryLogs.push({
         ingredient_id: purchase.ingredient_id,
-        change_amount: purchase.quantity,
+        change_amount: purchase.quantity, // Integer change amount
         log_date: purchase.purchase_date,
         reference_type: 'purchase',
-        reference_id: null,
+        reference_id: null, // No purchase_id available
       });
     }
     await prisma.inventoryLog.createMany({ data: inventoryLogs });
