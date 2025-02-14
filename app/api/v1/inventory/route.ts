@@ -7,6 +7,7 @@ export async function GET() {
   try {
     const ingredients = await db.ingredient.findMany({
       include: {
+        purchases: true,
         supplier: true,
       },
     });
