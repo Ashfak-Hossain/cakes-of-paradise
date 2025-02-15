@@ -1,4 +1,5 @@
 import { db } from '@/lib/db';
+import { ApiError } from '@/lib/fetcher';
 import { ingredientSchema } from '@/schemas/ingredient';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -8,16 +9,29 @@ export async function GET() {
     const ingredients = await db.ingredient.findMany({
       include: {
         purchases: true,
-        supplier: true,
+        supplier: {
+          select: { supplier_id: true, supplier_name: true },
+        },
       },
     });
 
-    return NextResponse.json(ingredients);
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to fetch ingredients', message: error },
-      { status: 500 }
-    );
+    return NextResponse.json(ingredients, { status: 200 });
+  } catch (error: any) {
+    console.error('Error fetching ingredients:', error);
+
+    const errorResponse: ApiError = {
+      error: 'DATABASE_ERROR',
+      code: 'INGREDIENT_FETCH_FAILED',
+      details:
+        process.env.NODE_ENV === 'production' ? undefined : error.message,
+    };
+
+    return NextResponse.json(errorResponse, {
+      status: 500,
+      headers: {
+        'Cache-Control': 'no-store, max-age=0',
+      },
+    });
   }
 }
 

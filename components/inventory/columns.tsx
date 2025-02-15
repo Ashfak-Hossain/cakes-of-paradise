@@ -5,15 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/data-table/data-table-row-actions';
-
-export type InventoryItem = {
-  ingredient_id: number;
-  ingredient_name: string;
-  unit_of_measure: string;
-  current_stock: number;
-  reorder_level?: number;
-  supplier_name?: string;
-};
+import { InventoryItem } from '@/services/inventory';
 
 export const columns: ColumnDef<InventoryItem>[] = [
   {
@@ -50,16 +42,21 @@ export const columns: ColumnDef<InventoryItem>[] = [
       return <DataTableColumnHeader column={column} title="Stock" />;
     },
     cell: ({ row }) => {
-      const stock = row.getValue<number>('current_stock');
+      const stockValue = row.getValue('current_stock');
+      const reorderLevel = row.getValue<number>('reorder_level') ?? 0;
+
+      const stock =
+        typeof stockValue === 'number'
+          ? stockValue
+          : parseFloat(stockValue as string) || 0;
+
+      if (isNaN(stock)) {
+        console.error("Invalid 'current_stock' value:", stockValue);
+        return <Badge>N/A</Badge>;
+      }
       return (
-        <Badge
-          variant={
-            stock <= (row.getValue<number>('reorder_level') ?? 0)
-              ? 'destructive'
-              : 'default'
-          }
-        >
-          {stock}
+        <Badge variant={stock <= reorderLevel ? 'destructive' : 'default'}>
+          {stock.toFixed(2)}
         </Badge>
       );
     },
@@ -79,11 +76,30 @@ export const columns: ColumnDef<InventoryItem>[] = [
   {
     accessorKey: 'reorder_level',
     header: 'Reorder Level',
+    cell: ({ row }) => {
+      const reorderLevelValue = row.getValue('reorder_level');
+
+      const reorderLevel =
+        typeof reorderLevelValue === 'number'
+          ? reorderLevelValue
+          : parseFloat(reorderLevelValue as string) || 0;
+
+      if (isNaN(reorderLevel)) {
+        console.error("Invalid 'reorder_level' value:", reorderLevelValue);
+        return <span>N/A</span>;
+      }
+
+      return <span>{reorderLevel.toFixed(2)}</span>;
+    },
   },
   {
-    accessorKey: 'supplier_name',
+    accessorKey: 'supplier',
     header: 'Supplier',
-    cell: ({ row }) => row.getValue<string>('supplier_name') || 'N/A',
+    cell: ({ row }) => {
+      const supplier = row.original.supplier;
+      const supplierName = supplier?.supplier_name || 'N/A';
+      return <span>{supplierName}</span>;
+    },
   },
   {
     id: 'actions',

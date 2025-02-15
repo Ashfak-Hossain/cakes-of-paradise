@@ -18,7 +18,7 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { CartesianGrid, XAxis, LabelList, BarChart, Bar } from 'recharts';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { TrendingUp } from 'lucide-react';
 import {
   Card,
@@ -31,6 +31,7 @@ import {
 import { DatePickerWithRange } from '../ui/datePickerWithRange';
 import { DateRange } from 'react-day-picker';
 import { format, parse, parseISO } from 'date-fns';
+import { Button } from '../ui/button';
 
 interface Ingredient {
   ingredient_id: number;
@@ -39,7 +40,10 @@ interface Ingredient {
   current_stock: string;
   reorder_level: string;
   supplier_id: number;
-  supplier_name: string;
+  supplier: {
+    supplier_id: number;
+    supplier_name: string;
+  };
   purchases: {
     purchase_id: number;
     supplier_id: number | null;
@@ -64,73 +68,53 @@ const IngredientAnalytics = ({ data }: IngredientAnalyticsProps) => {
   const [selectedIngredientId, setSelectedIngredientId] = useState<
     number | null
   >(null);
-  const [chartData, setChartData] = useState<chartData[]>([]);
   const [selectedDateRange, setSelectedDateRange] = useState<
     DateRange | undefined
   >(undefined);
   const [selectedUnit, setSelectedUnit] = useState<string | null>(null);
-  const [filteredChartData, setFilteredChartData] = useState<chartData[]>([]);
 
-  useEffect(() => {
-    if (selectedIngredientId === null) {
-      setChartData([]);
-      setFilteredChartData([]);
-      return;
-    }
+  const aggregatedData = useMemo(() => {
+    if (selectedIngredientId === null) return [];
 
     const selectedIngredient = data.find(
       (item) => item.ingredient_id === selectedIngredientId
     );
-
-    if (!selectedIngredient) {
-      setChartData([]);
-      setFilteredChartData([]);
-      return;
-    }
+    if (!selectedIngredient) return [];
 
     setSelectedUnit(selectedIngredient.unit_of_measure);
 
-    const aggregatedData = selectedIngredient.purchases.reduce(
-      (accumulator, purchase) => {
-        const date = format(parseISO(purchase.purchase_date), 'yyyy-MM-dd');
-        const quantity = parseFloat(purchase.quantity);
-        const existingEntry = accumulator.find((entry) => entry.date === date);
-        if (existingEntry) {
-          existingEntry.quantity += quantity;
-        } else {
-          accumulator.push({ date, quantity });
-        }
-        return accumulator;
-      },
-      [] as chartData[]
+    const result = selectedIngredient.purchases.reduce((acc, purchase) => {
+      const date = format(parseISO(purchase.purchase_date), 'yyyy-MM-dd'); // ✅ Directly format the date
+      const quantity = parseFloat(purchase.quantity);
+      const existingEntry = acc.find((entry) => entry.date === date);
+
+      if (existingEntry) {
+        existingEntry.quantity += quantity;
+      } else {
+        acc.push({ date, quantity });
+      }
+      return acc;
+    }, [] as chartData[]);
+
+    return result.sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
     );
-
-    aggregatedData.sort((a, b) => {
-      const dateA = new Date(a.date);
-      const dateB = new Date(b.date);
-      return dateA.getTime() - dateB.getTime();
-    });
-
-    setChartData(aggregatedData);
-    setFilteredChartData(aggregatedData);
   }, [selectedIngredientId, data]);
 
-  useEffect(() => {
-    if (selectedDateRange?.from && selectedDateRange?.to) {
-      const filteredData = chartData.filter((entry) => {
-        const entryDate = parse(entry.date, 'yyyy-MM-dd', new Date());
-        return (
-          selectedDateRange?.from &&
-          selectedDateRange?.to &&
-          entryDate.getTime() >= selectedDateRange.from.getTime() &&
-          entryDate.getTime() <= selectedDateRange.to.getTime()
-        );
-      });
-      setFilteredChartData(filteredData); // Update the filtered data state
-    } else {
-      setFilteredChartData(chartData); // Show all data if no date range is selected
-    }
-  }, [selectedDateRange, chartData]);
+  const filteredChartData = useMemo(() => {
+    if (!selectedDateRange?.from || !selectedDateRange?.to)
+      return aggregatedData;
+
+    return aggregatedData.filter((entry) => {
+      const entryDate = new Date(entry.date);
+      return (
+        selectedDateRange?.from &&
+        selectedDateRange?.to &&
+        entryDate.getTime() >= selectedDateRange.from.getTime() &&
+        entryDate.getTime() <= selectedDateRange.to.getTime()
+      );
+    });
+  }, [selectedDateRange, aggregatedData]);
 
   const handleSelectChange = (value: string) => {
     const selectedId = Number(value);
@@ -165,7 +149,7 @@ const IngredientAnalytics = ({ data }: IngredientAnalyticsProps) => {
         subtitle="View purchase history"
       />
       <Select onValueChange={handleSelectChange}>
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-[250px]">
           <SelectValue placeholder="Select Ingredient" />
         </SelectTrigger>
         <SelectContent>
@@ -180,7 +164,7 @@ const IngredientAnalytics = ({ data }: IngredientAnalyticsProps) => {
         </SelectContent>
       </Select>
 
-      {selectedIngredientId !== null && chartData.length > 0 && (
+      {selectedIngredientId !== null && aggregatedData.length > 0 && (
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div className="flex flex-col items-start gap-2">
@@ -193,8 +177,14 @@ const IngredientAnalytics = ({ data }: IngredientAnalyticsProps) => {
                 Purchase history for the selected ingredient
               </CardDescription>
             </div>
-            <div>
+            <div className="flex items-center gap-2">
               <DatePickerWithRange onDateChange={handleDateRangeChange} />
+              <Button
+                variant="outline"
+                onClick={() => setSelectedDateRange(undefined)}
+              >
+                Reset
+              </Button>
             </div>
           </CardHeader>
           <CardContent className="flex items-center justify-center">
@@ -253,12 +243,40 @@ const IngredientAnalytics = ({ data }: IngredientAnalyticsProps) => {
             </ChartContainer>
           </CardContent>
           <CardFooter className="flex-col items-start gap-2 text-sm">
-            <div className="flex gap-2 font-medium leading-none">
-              <TrendingUp size={16} />
-              <span>Quantity Purchased</span>
+            <div className="flex gap-2 font-medium leading-none items-center">
+              <TrendingUp size={20} />
+              <span>
+                Total Purchases:
+                <span className="font-bold px-1">
+                  {filteredChartData.length}
+                </span>
+              </span>
             </div>
             <div className="leading-none text-muted-foreground">
-              Showing total visitors for the last 6 months
+              {selectedDateRange?.from && selectedDateRange?.to ? (
+                <>
+                  Showing total purchases from{' '}
+                  <span className="font-medium">
+                    {format(selectedDateRange.from, 'MMM d, yyyy')}
+                  </span>{' '}
+                  to{' '}
+                  <span className="font-medium">
+                    {format(selectedDateRange.to, 'MMM d, yyyy')}
+                  </span>{' '}
+                  (
+                  <span className="font-medium">
+                    {Math.ceil(
+                      (selectedDateRange.to.getTime() -
+                        selectedDateRange.from.getTime()) /
+                        (1000 * 60 * 60 * 24) +
+                        1
+                    )}
+                  </span>{' '}
+                  days)
+                </>
+              ) : (
+                'Showing total purchases'
+              )}
             </div>
           </CardFooter>
         </Card>

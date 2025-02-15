@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import {
   persistReducer,
