@@ -33,6 +33,7 @@ import { cn } from '@/lib/utils';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '../ui/calendar';
 import { measurement_units } from '@/lib/constants';
+import SectionHeader from '../common/SectionHeader';
 
 interface IngredientPurchaseFormProps {
   initialData?: Ingredient | null;
@@ -83,9 +84,7 @@ const IngredientPurchaseForm = ({
         form.setValue('supplier_id', initialSupplier.supplier_id || null);
       }
     }
-  }, [suppliers, initialData, form]);
 
-  useEffect(() => {
     const currentUnitValue = form.getValues('unit_of_measure');
     if (currentUnitValue) {
       const foundUnit = measurement_units.find(
@@ -95,7 +94,7 @@ const IngredientPurchaseForm = ({
     } else {
       setDisplayedUnitLabel(null);
     }
-  }, [form]);
+  }, [suppliers, initialData, form]);
 
   const handleSupplierSelect = (value: string) => {
     const supplierName = value;
@@ -113,7 +112,11 @@ const IngredientPurchaseForm = ({
   };
 
   return (
-    <div>
+    <div className="flex flex-col space-y-4 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-900">
+      <SectionHeader
+        title="Purchase Ingredient"
+        subtitle="Purchase the ingredient from the supplier."
+      />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">

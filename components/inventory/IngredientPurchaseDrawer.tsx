@@ -33,7 +33,7 @@ const IngredientPurchaseDrawer = () => {
   return (
     <Drawer open={isOpen} onClose={handleClose}>
       <DrawerContent>
-        <DrawerHeader>
+        <DrawerHeader className="sr-only">
           <DrawerTitle>Purchase Ingredient</DrawerTitle>
           <DrawerDescription>
             Purchase the ingredient from the supplier.
