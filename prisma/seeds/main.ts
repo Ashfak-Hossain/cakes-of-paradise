@@ -16,7 +16,7 @@ async function seed() {
     await prisma.supplier.deleteMany({});
     await prisma.customer.deleteMany({});
 
-    // 1. Create Suppliers
+    //* 1. Create Suppliers
     const suppliers = Array.from({ length: 20 }).map(() => ({
       supplier_name: faker.company.name(),
       contact_name: faker.person.fullName(),
@@ -30,7 +30,7 @@ async function seed() {
     await prisma.supplier.createMany({ data: suppliers });
     const createdSuppliers = await prisma.supplier.findMany(); // Get created suppliers
 
-    // 2. Create Ingredients
+    //* 2.Create Ingredients
     const ingredients = Array.from({ length: 50 }).map(() => {
       const randomSupplier =
         createdSuppliers[
@@ -39,15 +39,15 @@ async function seed() {
       return {
         ingredient_name: faker.commerce.productName(),
         unit_of_measure: faker.helpers.arrayElement(['kg', 'g', 'lb', 'oz']),
-        current_stock: faker.number.float({ min: 0, max: 100 }),
-        reorder_level: faker.number.float({ min: 0, max: 50 }),
+        current_stock: faker.number.int({ min: 0, max: 100 }),
+        reorder_level: faker.number.int({ min: 0, max: 50 }),
         supplier_id: randomSupplier.supplier_id,
       };
     });
     await prisma.ingredient.createMany({ data: ingredients });
     const createdIngredients = await prisma.ingredient.findMany(); // Get created ingredients
 
-    // 3. Create Customers
+    //* 3. Create Customers
     const customers = Array.from({ length: 100 }).map(() => ({
       first_name: faker.person.firstName(),
       last_name: faker.person.lastName(),
@@ -59,7 +59,7 @@ async function seed() {
     await prisma.customer.createMany({ data: customers });
     const createdCustomers = await prisma.customer.findMany(); // Get created customers
 
-    // 4. Create Products
+    //* 4. Create Products
     const products = Array.from({ length: 30 }).map(() => ({
       product_name: faker.commerce.productName(),
       description: faker.lorem.sentence(),
@@ -70,7 +70,7 @@ async function seed() {
     await prisma.product.createMany({ data: products });
     const createdProducts = await prisma.product.findMany(); // Get created products
 
-    // 5. Create ProductIngredients (Prevent Duplicates - Improved)
+    //* 5. Create ProductIngredients (Prevent Duplicates - Improved)
     const productIngredients = [];
     const usedCombinations = new Set<string>(); // Keep track of used combinations
 
@@ -102,7 +102,7 @@ async function seed() {
     }
     await prisma.productIngredient.createMany({ data: productIngredients });
 
-    // 6. Create Orders
+    //* 6. Create Orders
     const orders = Array.from({ length: 100 }).map(() => {
       const randomCustomer =
         createdCustomers[
@@ -123,7 +123,7 @@ async function seed() {
     await prisma.order.createMany({ data: orders });
     const createdOrders = await prisma.order.findMany(); // Get created orders
 
-    // 7. Create Order Details (Corrected total_price calculation)
+    //* 7. Create Order Details (Corrected total_price calculation)
     const orderDetails = Array.from({ length: 200 }).map(() => {
       const randomOrder =
         createdOrders[
@@ -147,7 +147,7 @@ async function seed() {
     });
     await prisma.orderDetail.createMany({ data: orderDetails });
 
-    // 8. Create Purchases (Integer quantities, history for last 3 months)
+    //* 8. Create Purchases (Integer quantities, history for last 3 months)
     const purchases = [];
     const endDate = new Date(); // Today
     const startDate = addMonths(endDate, -3); // 3 months ago
@@ -181,7 +181,7 @@ async function seed() {
     }
     await prisma.purchase.createMany({ data: purchases });
 
-    // 9. Create Inventory Logs (Related to purchases, integer change_amount)
+    //* 9. Create Inventory Logs (Related to purchases, integer change_amount)
     const inventoryLogs = [];
     for (const purchase of purchases) {
       inventoryLogs.push({

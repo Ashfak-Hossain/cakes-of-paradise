@@ -7,6 +7,8 @@ import SectionHeader from '@/components/common/SectionHeader';
 import IngredientAnalytics from '@/components/inventory/IngredientAnalytics';
 import { getInventory } from '@/services/inventory';
 import { Suspense } from 'react';
+import IngredientEditDrawer from '@/components/inventory/IngredientEditDrawer';
+import IngredientPurchaseDrawer from '@/components/inventory/IngredientPurchaseDrawer';
 
 export const metadata: Metadata = {
   title: 'Inventory Management',
@@ -27,11 +29,12 @@ const page = async () => {
       >
         <DataTable data={data} columns={columns} />
       </Suspense>
-
       <Separator />
       <IngredientForm />
       <Separator />
       <IngredientAnalytics data={data} />
+      <IngredientEditDrawer />
+      <IngredientPurchaseDrawer />
     </div>
   );
 };

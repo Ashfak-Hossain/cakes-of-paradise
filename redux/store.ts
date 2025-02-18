@@ -13,6 +13,8 @@ import {
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 import globalReducer from '@/redux/features/global/global';
 import { apiSlice } from '@/redux/features/api/apiSlice';
+import { ingredientSlice } from '@/redux/features/ingredients/ingredientsSlice';
+import { drawersSlice } from '@/redux/features/drawers/drawersSlice';
 
 /* REDUX PERSISTENCE */
 const createNoopStorage = () => {
@@ -43,6 +45,8 @@ const persistConfig = {
 /* REDUX ROOT REDUCER */
 const rootReducer = combineReducers({
   global: globalReducer,
+  ingredients: ingredientSlice.reducer,
+  drawers: drawersSlice.reducer,
   [apiSlice.reducerPath]: apiSlice.reducer,
 });
 
