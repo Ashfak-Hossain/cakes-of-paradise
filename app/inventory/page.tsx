@@ -19,7 +19,7 @@ const page = async () => {
   const data = await getInventory();
 
   return (
-    <div className="flex h-full flex-1 flex-col space-y-8 p-8">
+    <div className="flex h-full flex-1 flex-col space-y-6 p-8">
       <SectionHeader
         title="Inventory Management"
         subtitle="Here's a list of all the ingredients in your inventory."
@@ -27,7 +27,9 @@ const page = async () => {
       <Suspense
         fallback={<p className="text-gray-500">Loading inventory...</p>}
       >
-        <DataTable data={data} columns={columns} />
+        <div className="border border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-900">
+          <DataTable data={data} columns={columns} />
+        </div>
       </Suspense>
       <Separator />
       <IngredientForm />
