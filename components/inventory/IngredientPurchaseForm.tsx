@@ -30,7 +30,7 @@ import {
 } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { cn } from '@/lib/utils';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Loader2 } from 'lucide-react';
 import { Calendar } from '../ui/calendar';
 import { measurement_units } from '@/lib/constants';
 import SectionHeader from '../common/SectionHeader';
@@ -56,10 +56,11 @@ const IngredientPurchaseForm = ({
   const suppliers = suppliersResult?.data;
 
   const defaultValues: IngredientPurchase = {
+    ingredient_id: initialData?.ingredient_id || 0,
     ingredient_name: initialData?.ingredient_name || '',
     unit_of_measure: initialData?.unit_of_measure || '',
     cost: 0,
-    stock: initialData?.stock || 0,
+    stock: 0,
     reorder_level: initialData?.reorder_level || 0,
     supplier_id: initialSupplierId || null,
     supplier_name: initialSupplierName || '',
@@ -255,7 +256,6 @@ const IngredientPurchaseForm = ({
                     </FormLabel>
                     <FormControl>
                       <Input
-                        readOnly
                         type="number"
                         placeholder="0"
                         className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
@@ -315,8 +315,15 @@ const IngredientPurchaseForm = ({
             type="submit"
             className="bg-gray-900 hover:bg-gray-800 dark:bg-blue-500 dark:hover:bg-blue-600 text-white flex items-center gap-2"
             // disabled={form.formState.isSubmitting || isLoading}
+            disabled={form.formState.isSubmitting}
           >
-            Purchase
+            {form.formState.isSubmitting ? (
+              <>
+                Purchasing <Loader2 className="animate-spin w-5 h-5" />
+              </>
+            ) : (
+              'Purchase'
+            )}
           </Button>
         </form>
       </Form>

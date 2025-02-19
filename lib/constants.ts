@@ -27,3 +27,19 @@ export const measurement_units = [
   { value: 'piece', label: 'Piece' },
   { value: 'dozen', label: 'Dozen' },
 ];
+
+export const API_ERROR = {
+  DATABASE_ERROR: {
+    error: 'DATABASE_ERROR',
+    message:
+      'An error occurred while processing your request. Please try again later.',
+  },
+  VALIDATION_ERROR: {
+    error: 'VALIDATION_ERROR',
+    message: 'Invalid input data. Please check the form.',
+  },
+  SERVER_ERROR: {
+    error: 'SERVER_ERROR',
+    message: 'An unexpected error occurred. Please try again later.',
+  },
+};

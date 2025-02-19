@@ -71,7 +71,7 @@ export async function fetcher<T>(
       if (isDebug) {
         console.log(`[Fetcher] Fetching: ${url}, Attempt: ${i + 1}`);
       }
-      
+
       const res = await fetch(url, {
         ...init,
         headers,

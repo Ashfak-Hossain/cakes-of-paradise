@@ -45,7 +45,9 @@ const IngredientEditDrawer = () => {
           </div>
           <DrawerFooter>
             <DrawerClose>
-              <Button variant="outline">Cancel</Button>
+              <Button asChild variant="outline">
+                Cancel
+              </Button>
             </DrawerClose>
           </DrawerFooter>
         </div>

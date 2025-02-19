@@ -27,8 +27,9 @@ export type IngredientUpdate = z.infer<typeof ingredientUpdateSchema>;
 // Ingredient Purchase Schema
 export const ingredientPurchaseSchema = ingredientSchema.extend({
   supplier_name: z.string().nullable(),
-  purchase_date: z.date({
-    required_error: 'Purchase date is required',
-  }),
+  purchase_date: z.union([
+    z.string().transform((val) => new Date(val)),
+    z.date(),
+  ]),
 });
 export type IngredientPurchase = z.infer<typeof ingredientPurchaseSchema>;

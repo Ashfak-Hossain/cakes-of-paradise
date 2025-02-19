@@ -36,7 +36,7 @@ model Supplier {
 model Ingredient {
   ingredient_id   Int       @id @default(autoincrement())
   ingredient_name String    @unique
-  unit_of_measure String // kg, liter, packet, etc.
+  unit_of_measure String
   current_stock   Decimal   @default(0)
   reorder_level   Decimal?
   supplier_id     Int?
@@ -109,9 +109,10 @@ model Purchase {
   ingredient Ingredient @relation(fields: [ingredient_id], references: [ingredient_id])
 }
 
-// enum reference_type {
-//   purchase
-//   order
+// enum ReferenceType {
+//   PURCHASE
+//   ORDER
+//   ADJUSTMENT
 // }
 
 model InventoryLog {
@@ -119,7 +120,7 @@ model InventoryLog {
   ingredient_id  Int
   change_amount  Decimal
   log_date       DateTime @default(now())
-  reference_type String // 'purchase' or 'order'
+  reference_type String
   reference_id   Int?
 
   ingredient Ingredient @relation(fields: [ingredient_id], references: [ingredient_id])
