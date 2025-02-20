@@ -26,7 +26,7 @@ model Supplier {
   contact_name         String?
   phone                String
   email                String?
-  supplied_ingredients Json? // JSON field for ingredients list
+  supplied_ingredients Json?
   payment_terms        String?
 
   ingredients Ingredient[]
@@ -51,7 +51,7 @@ model Product {
   product_id   Int      @id @default(autoincrement())
   product_name String
   description  String?
-  category     String // cake, pastry, cookies, etc.
+  category     String
   price        Decimal
   cost_to_make Decimal
   is_available Boolean  @default(true)

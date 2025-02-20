@@ -1,41 +1,38 @@
 'use client';
 
-import SectionHeader from '@/components/common/SectionHeader';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+
+import SectionHeader from '@/components/common/SectionHeader';
 import { Button } from '@/components/ui/button';
 import {
   Form,
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
-  FormDescription,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Ingredient,
-  ingredientSchema,
-  ingredientUpdateSchema,
-} from '@/schemas/ingredient';
 import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { measurement_units } from '@/lib/constants';
-import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
 import {
   useAddIngredientMutation,
   useUpdateIngredientMutation,
 } from '@/redux/features/api/ingredients/ingredientsApiSlice';
-import { useAppDispatch } from '@/redux/hooks';
-import { clearSelectedIngredient } from '@/redux/features/ingredients/ingredientsSlice';
 import { setIsDrawerOpen } from '@/redux/features/drawers/drawersSlice';
+import { clearSelectedIngredient } from '@/redux/features/ingredients/ingredientsSlice';
+import { useAppDispatch } from '@/redux/hooks';
+import { Ingredient, ingredientSchema, ingredientUpdateSchema } from '@/schemas/ingredient';
 
 interface IngredientFormProps {
   initialData?: Ingredient | null;
@@ -43,18 +40,12 @@ interface IngredientFormProps {
   onClose?: () => void;
 }
 
-const IngredientForm = ({
-  initialData,
-  isUpdateMode = false,
-}: IngredientFormProps) => {
+const IngredientForm = ({ initialData, isUpdateMode = false }: IngredientFormProps) => {
   const dispatch = useAppDispatch();
   const [addIngredient, { isLoading: isAdding }] = useAddIngredientMutation();
-  const [updateIngredient, { isLoading: isUpdating }] =
-    useUpdateIngredientMutation();
+  const [updateIngredient, { isLoading: isUpdating }] = useUpdateIngredientMutation();
 
-  const validationSchema = isUpdateMode
-    ? ingredientUpdateSchema
-    : ingredientSchema;
+  const validationSchema = isUpdateMode ? ingredientUpdateSchema : ingredientSchema;
 
   const defaultValues: Partial<Ingredient> = initialData || {
     ingredient_name: '',
@@ -107,9 +98,7 @@ const IngredientForm = ({
     <div className="flex flex-col space-y-4 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-900">
       <SectionHeader
         title={title}
-        subtitle={`${
-          isUpdateMode ? 'Update' : 'Add'
-        } the details of the ingredient.`}
+        subtitle={`${isUpdateMode ? 'Update' : 'Add'} the details of the ingredient.`}
       />
 
       <Form {...form}>
@@ -157,9 +146,7 @@ const IngredientForm = ({
                           placeholder="0"
                           className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
                           {...field}
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
+                          onChange={(e) => field.onChange(Number(e.target.value))}
                         />
                       </FormControl>
                       <FormDescription className="text-gray-600 dark:text-gray-400">
@@ -187,9 +174,7 @@ const IngredientForm = ({
                           placeholder="0"
                           className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
                           {...field}
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
+                          onChange={(e) => field.onChange(Number(e.target.value))}
                         />
                       </FormControl>
                       <FormDescription className="text-gray-600 dark:text-gray-400">
@@ -214,10 +199,7 @@ const IngredientForm = ({
                       <FormLabel className="text-gray-900 dark:text-gray-200">
                         Unit of Measure <span className="text-red-500">*</span>
                       </FormLabel>
-                      <Select
-                        onValueChange={(value) => field.onChange(value)}
-                        value={field.value}
-                      >
+                      <Select onValueChange={(value) => field.onChange(value)} value={field.value}>
                         <FormControl>
                           <SelectTrigger className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700">
                             <SelectValue placeholder="Select unit" />

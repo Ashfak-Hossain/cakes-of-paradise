@@ -1,8 +1,9 @@
 import { AppError, DatabaseError } from '@/app/api/v1/error/errorHandler';
 import { db } from '@/lib/db';
 import { IngredientPurchase } from '@/schemas/ingredient';
+import { Purchase } from '@/schemas/purchase';
 
-export const purchaseIngredient = async (validatedData: IngredientPurchase): Promise<any> => {
+export const purchaseIngredient = async (validatedData: IngredientPurchase): Promise<Purchase> => {
   try {
     const { supplier_id, ingredient_id, stock, cost, purchase_date } = validatedData;
 

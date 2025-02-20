@@ -4,6 +4,7 @@ import { Ingredient } from '@/schemas/ingredient';
 const ingredientsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     //* add ingredient mutation
+    //*                            <ResultType, QueryArg>
     addIngredient: builder.mutation<any, Partial<Ingredient>>({
       query: (data) => ({
         url: '/ingredient',
@@ -23,7 +24,6 @@ const ingredientsApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useAddIngredientMutation, useUpdateIngredientMutation } =
-  ingredientsApiSlice;
+export const { useAddIngredientMutation, useUpdateIngredientMutation } = ingredientsApiSlice;
 
 export default ingredientsApiSlice;

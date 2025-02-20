@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { handleError } from '../error/errorHandler';
-import { ApiResponse } from '../types/types';
+
+import { handleError } from '@/app/api/v1/error/errorHandler';
+import { ApiResponse } from '@/app/api/v1/types/types';
 
 export function apiHandler<T>(
   handler: (req: Request) => Promise<T>,

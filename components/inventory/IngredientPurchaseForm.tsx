@@ -1,57 +1,54 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { format } from 'date-fns';
+import { CalendarIcon, Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+
+import SectionHeader from '@/components/common/SectionHeader';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Form,
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
-  FormDescription,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { format } from 'date-fns';
-import {
-  Ingredient,
-  IngredientPurchase,
-  ingredientPurchaseSchema,
-} from '@/schemas/ingredient';
-import { Button } from '@/components/ui/button';
-import { useGetSuppliersQuery } from '@/redux/features/api/supplier/supplierApiSlice';
-import { useState, useEffect } from 'react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { cn } from '@/lib/utils';
-import { CalendarIcon, Loader2 } from 'lucide-react';
-import { Calendar } from '../ui/calendar';
 import { measurement_units } from '@/lib/constants';
-import SectionHeader from '../common/SectionHeader';
+import { cn } from '@/lib/utils';
+import { useCreatePurchaseMutation } from '@/redux/features/api/purchases/purchasesApiSlice';
+import { useGetSuppliersQuery } from '@/redux/features/api/supplier/supplierApiSlice';
+import { setIsIngredientPurchaseDrawerOpen } from '@/redux/features/drawers/drawersSlice';
+import { clearSelectedIngredient } from '@/redux/features/ingredients/ingredientsSlice';
+import { useAppDispatch } from '@/redux/hooks';
+import { Ingredient, IngredientPurchase, ingredientPurchaseSchema } from '@/schemas/ingredient';
 
 interface IngredientPurchaseFormProps {
   initialData?: Ingredient | null;
 }
 
-const IngredientPurchaseForm = ({
-  initialData,
-}: IngredientPurchaseFormProps) => {
+const IngredientPurchaseForm = ({ initialData }: IngredientPurchaseFormProps) => {
+  const dispatch = useAppDispatch();
   const { data: suppliersResult } = useGetSuppliersQuery();
-  const [initialSupplierName, setInitialSupplierName] = useState<string | null>(
-    null
-  );
-  const [initialSupplierId, setInitialSupplierId] = useState<number | null>(
-    null
-  );
-  const [displayedUnitLabel, setDisplayedUnitLabel] = useState<string | null>(
-    null
-  );
+  const [createPurchase, { isLoading: isPurchasing }] = useCreatePurchaseMutation();
+
+  const [initialSupplierName, setInitialSupplierName] = useState<string | null>(null);
+  const [initialSupplierId, setInitialSupplierId] = useState<number | null>(null);
+  const [displayedUnitLabel, setDisplayedUnitLabel] = useState<string | null>(null);
 
   const suppliers = suppliersResult?.data;
 
@@ -75,9 +72,7 @@ const IngredientPurchaseForm = ({
 
   useEffect(() => {
     if (suppliers && initialData?.supplier_id) {
-      const initialSupplier = suppliers.find(
-        (s) => s.supplier_id === initialData.supplier_id
-      );
+      const initialSupplier = suppliers.find((s) => s.supplier_id === initialData.supplier_id);
       if (initialSupplier) {
         setInitialSupplierName(initialSupplier.supplier_name || null);
         setInitialSupplierId(initialSupplier.supplier_id || null);
@@ -88,9 +83,7 @@ const IngredientPurchaseForm = ({
 
     const currentUnitValue = form.getValues('unit_of_measure');
     if (currentUnitValue) {
-      const foundUnit = measurement_units.find(
-        (unit) => unit.value === currentUnitValue
-      );
+      const foundUnit = measurement_units.find((unit) => unit.value === currentUnitValue);
       setDisplayedUnitLabel(foundUnit?.label || null);
     } else {
       setDisplayedUnitLabel(null);
@@ -99,17 +92,47 @@ const IngredientPurchaseForm = ({
 
   const handleSupplierSelect = (value: string) => {
     const supplierName = value;
-    const selectedSupplier = suppliers?.find(
-      (s) => s.supplier_name === supplierName
-    );
+    const selectedSupplier = suppliers?.find((s) => s.supplier_name === supplierName);
     if (selectedSupplier) {
       form.setValue('supplier_name', selectedSupplier?.supplier_name || '');
       form.setValue('supplier_id', selectedSupplier.supplier_id || null);
     }
   };
 
-  const onSubmit = (data: IngredientPurchase) => {
-    console.log('purchasing: ', data);
+  const onSubmit = async (data: IngredientPurchase) => {
+    try {
+      const payload = await createPurchase(data).unwrap();
+      if (payload.success) {
+        toast.success('Ingredient purchased successfully');
+        dispatch(clearSelectedIngredient());
+        dispatch(setIsIngredientPurchaseDrawerOpen(false));
+        form.reset();
+      } else {
+        toast.error(payload.error?.message || 'Failed to purchase ingredient');
+        if (payload.error?.details) {
+          console.error('Purchase Error Details:', payload.error.details);
+        }
+      }
+    } catch (error: any) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.error &&
+        error.response.data.error.message
+      ) {
+        toast.error(error.response.data.error.message);
+        console.error(error.response.data.error);
+      } else if (error.status === 403) {
+        toast.error("Forbidden. You don't have permission to perform this action.");
+      } else if (error.status === 404) {
+        toast.error('Resource not found.');
+      } else if (error.status === 500) {
+        toast.error('A server error occurred. Please try again later.');
+      } else {
+        console.error('Purchase Error:', error);
+        toast.error('Something went wrong');
+      }
+    }
   };
 
   return (
@@ -189,11 +212,7 @@ const IngredientPurchaseForm = ({
                               !field.value && 'text-muted-foreground'
                             )}
                           >
-                            {field.value ? (
-                              format(field.value, 'PPP')
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
+                            {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
@@ -203,9 +222,7 @@ const IngredientPurchaseForm = ({
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date('1900-01-01')
-                          }
+                          disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
                           initialFocus
                         />
                       </PopoverContent>
@@ -251,9 +268,7 @@ const IngredientPurchaseForm = ({
                 name="stock"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-900 dark:text-gray-200">
-                      Stock
-                    </FormLabel>
+                    <FormLabel className="text-gray-900 dark:text-gray-200">Stock</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -277,13 +292,8 @@ const IngredientPurchaseForm = ({
                 name="supplier_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-900 dark:text-gray-200">
-                      Supplier
-                    </FormLabel>
-                    <Select
-                      onValueChange={handleSupplierSelect}
-                      value={field.value!}
-                    >
+                    <FormLabel className="text-gray-900 dark:text-gray-200">Supplier</FormLabel>
+                    <Select onValueChange={handleSupplierSelect} value={field.value!}>
                       <FormControl>
                         <SelectTrigger className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700">
                           <SelectValue placeholder="Select Supplier" />
@@ -314,10 +324,9 @@ const IngredientPurchaseForm = ({
           <Button
             type="submit"
             className="bg-gray-900 hover:bg-gray-800 dark:bg-blue-500 dark:hover:bg-blue-600 text-white flex items-center gap-2"
-            // disabled={form.formState.isSubmitting || isLoading}
-            disabled={form.formState.isSubmitting}
+            disabled={form.formState.isSubmitting || isPurchasing}
           >
-            {form.formState.isSubmitting ? (
+            {form.formState.isSubmitting || isPurchasing ? (
               <>
                 Purchasing <Loader2 className="animate-spin w-5 h-5" />
               </>

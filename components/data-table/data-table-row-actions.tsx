@@ -11,21 +11,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useAppDispatch } from '@/redux/hooks';
-import { setSelectedIngredient } from '@/redux/features/ingredients/ingredientsSlice';
-import { InventoryItem } from '@/services/inventory';
 import {
   setIsDrawerOpen,
   setIsIngredientPurchaseDrawerOpen,
 } from '@/redux/features/drawers/drawersSlice';
+import { setSelectedIngredient } from '@/redux/features/ingredients/ingredientsSlice';
+import { useAppDispatch } from '@/redux/hooks';
+import { InventoryItem } from '@/services/inventory';
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
 
-export function DataTableRowActions<TData>({
-  row,
-}: DataTableRowActionsProps<TData>) {
+export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {
   const task = row.original;
   const dispatch = useAppDispatch();
 
@@ -42,10 +40,7 @@ export function DataTableRowActions<TData>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-        >
+        <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
           <Ellipsis />
           <span className="sr-only">Open menu</span>
         </Button>
