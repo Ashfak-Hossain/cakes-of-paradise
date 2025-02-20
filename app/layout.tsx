@@ -1,9 +1,11 @@
+import '@/app/globals.css';
+
 import type { Metadata } from 'next';
-import './globals.css';
-import { geistMono, geistSans } from '@/lib/font';
+
+import DashboardLayout from '@/components/common/Wrapper';
 import Providers from '@/components/providers/Providers';
-import DashboardLayout from '@/app/Wrapper';
 import { Toaster } from '@/components/ui/sonner';
+import { geistMono, geistSans } from '@/lib/font';
 
 export const metadata: Metadata = {
   title: 'Cakes of Paradise',
@@ -17,9 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning={true}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
           <DashboardLayout>{children}</DashboardLayout>
           <Toaster />

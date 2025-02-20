@@ -1,6 +1,6 @@
 import { ServerError, ValidationError } from '@/app/api/v1/error/errorHandler';
-import { ingredientPurchaseSchema } from '@/schemas/ingredient';
 import { purchaseIngredient } from '@/app/api/v1/purchases/service';
+import { ingredientPurchaseSchema } from '@/schemas/ingredient';
 
 class PurchaseController {
   static async createPurchase(req: Request) {
