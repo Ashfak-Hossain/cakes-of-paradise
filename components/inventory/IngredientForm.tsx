@@ -78,14 +78,29 @@ const IngredientForm = ({ initialData, isUpdateMode = false }: IngredientFormPro
         dispatch(setIsDrawerOpen(false));
         form.reset();
       } else {
-        toast.error(payload.error || 'An error occurred.');
+        toast.error(payload.error?.message || 'Failed to Add ingredient');
+        if (payload.error?.details) {
+          console.error('Add Ingredient Error Details:', payload.error.details);
+        }
       }
-    } catch (error) {
-      if (error && typeof error === 'object' && 'data' in error) {
-        const err = error as { data: { message: string } };
-        toast.error(err.data?.message || 'An error occurred.');
+    } catch (error: any) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.error &&
+        error.response.data.error.message
+      ) {
+        toast.error(error.response.data.error.message);
+        console.error(error.response.data.error);
+      } else if (error.status === 403) {
+        toast.error("Forbidden. You don't have permission to perform this action.");
+      } else if (error.status === 404) {
+        toast.error('Resource not found.');
+      } else if (error.status === 500) {
+        toast.error('A server error occurred. Please try again later.');
       } else {
-        toast.error('An error occurred.');
+        console.error('Purchase Error:', error);
+        toast.error('Something went wrong');
       }
     }
   };

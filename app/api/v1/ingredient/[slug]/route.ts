@@ -1,11 +1,9 @@
-import { db } from '@/lib/db';
-import { ingredientUpdateSchema } from '@/schemas/ingredient';
 import { NextResponse } from 'next/server';
 
-export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ slug: string }> }
-) {
+import { db } from '@/lib/db';
+import { ingredientUpdateSchema } from '@/schemas/ingredient';
+
+export async function GET(req: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await params;
     const ingredient = await db.ingredient.findUnique({
@@ -18,10 +16,7 @@ export async function GET(
     });
 
     if (!ingredient) {
-      return NextResponse.json(
-        { error: 'Ingredient not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Ingredient not found' }, { status: 404 });
     }
 
     return NextResponse.json(ingredient);
@@ -33,10 +28,7 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: Promise<{ slug: string }> }
-) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await params;
     const body = await req.json();
@@ -56,10 +48,7 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json(
-      { success: true, data: ingredient },
-      { status: 200 }
-    );
+    return NextResponse.json({ success: true, data: ingredient }, { status: 200 });
   } catch (error) {
     console.error('Error updating ingredient:', error);
 

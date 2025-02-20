@@ -1,6 +1,7 @@
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
 import { Ingredient } from '@/schemas/ingredient';
 import { InventoryItem } from '@/services/inventory';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface IngredientState {
   formInitialData: Ingredient | null;
@@ -31,7 +32,6 @@ export const ingredientSlice = createSlice({
   },
 });
 
-export const { setSelectedIngredient, clearSelectedIngredient } =
-  ingredientSlice.actions;
+export const { setSelectedIngredient, clearSelectedIngredient } = ingredientSlice.actions;
 
 export default ingredientSlice.reducer;

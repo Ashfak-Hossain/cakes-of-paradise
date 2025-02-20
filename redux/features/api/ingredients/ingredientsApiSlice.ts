@@ -1,11 +1,11 @@
+import { ApiResponse } from '@/app/api/v1/types/types';
 import { apiSlice } from '@/redux/features/api/apiSlice';
 import { Ingredient } from '@/schemas/ingredient';
 
 const ingredientsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     //* add ingredient mutation
-    //*                            <ResultType, QueryArg>
-    addIngredient: builder.mutation<any, Partial<Ingredient>>({
+    addIngredient: builder.mutation<ApiResponse<Partial<Ingredient>>, Partial<Ingredient>>({
       query: (data) => ({
         url: '/ingredient',
         method: 'POST',
