@@ -7,12 +7,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
   try {
     const { slug } = await params;
     const ingredient = await db.ingredient.findUnique({
-      where: {
-        ingredient_id: Number(slug),
-      },
-      include: {
-        purchases: true,
-      },
+      where: { ingredient_id: Number(slug) },
+      include: { purchases: true },
     });
 
     if (!ingredient) {
@@ -36,9 +32,6 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ slug: 
     const updateData = ingredientUpdateSchema.parse(body);
 
     const { ingredient_name, reorder_level } = updateData;
-
-    console.log('updateData:', updateData);
-    console.log('slug', slug);
 
     const ingredient = await db.ingredient.update({
       where: { ingredient_id: Number(slug) },

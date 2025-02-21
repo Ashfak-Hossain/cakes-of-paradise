@@ -1,5 +1,5 @@
 import { ServerError, ValidationError } from '@/app/api/v1/error/errorHandler';
-import { addIngredient } from '@/app/api/v1/ingredient/service';
+import { addIngredient, getIngredients } from '@/app/api/v1/ingredient/service';
 import { ingredientSchema } from '@/schemas/ingredient';
 
 class IngredientController {
@@ -18,6 +18,19 @@ class IngredientController {
     } catch (error: any) {
       if (error.name === 'ZodError') throw new ValidationError(error.errors);
       else throw new ServerError();
+    }
+  }
+
+  /**
+   ** Get all ingredients from the database
+   * @returns List of ingredients
+   */
+  static async getAll() {
+    try {
+      const ingredients = await getIngredients();
+      return ingredients;
+    } catch {
+      throw new ServerError();
     }
   }
 }

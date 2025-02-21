@@ -1,5 +1,7 @@
 'use client';
 
+import IngredientPurchaseForm from '@/components/inventory/IngredientPurchaseForm';
+import { Button } from '@/components/ui/button';
 import {
   Drawer,
   DrawerClose,
@@ -9,21 +11,15 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
-import { Button } from '@/components/ui/button';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { RootState } from '@/redux/store';
 import { setIsIngredientPurchaseDrawerOpen } from '@/redux/features/drawers/drawersSlice';
 import { clearSelectedIngredient } from '@/redux/features/ingredients/ingredientsSlice';
-import IngredientPurchaseForm from '@/components/inventory/IngredientPurchaseForm';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { RootState } from '@/redux/store';
 
 const IngredientPurchaseDrawer = () => {
   const dispatch = useAppDispatch();
-  const isOpen = useAppSelector(
-    (state: RootState) => state.drawers.isIngredientPurchaseDrawerOpen
-  );
-  const formData = useAppSelector(
-    (state: RootState) => state.ingredients.formInitialData
-  );
+  const isOpen = useAppSelector((state: RootState) => state.drawers.isIngredientPurchaseDrawerOpen);
+  const formData = useAppSelector((state: RootState) => state.ingredients.formInitialData);
 
   const handleClose = () => {
     dispatch(setIsIngredientPurchaseDrawerOpen(false));
@@ -35,9 +31,7 @@ const IngredientPurchaseDrawer = () => {
       <DrawerContent>
         <DrawerHeader className="sr-only">
           <DrawerTitle>Purchase Ingredient</DrawerTitle>
-          <DrawerDescription>
-            Purchase the ingredient from the supplier.
-          </DrawerDescription>
+          <DrawerDescription>Purchase the ingredient from the supplier.</DrawerDescription>
         </DrawerHeader>
         <div className="mx-auto w-full px-10">
           <div>

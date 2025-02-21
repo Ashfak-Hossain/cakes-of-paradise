@@ -1,5 +1,7 @@
 'use client';
 
+import IngredientForm from '@/components/inventory/IngredientForm';
+import { Button } from '@/components/ui/button';
 import {
   Drawer,
   DrawerClose,
@@ -9,21 +11,15 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
-import { Button } from '@/components/ui/button';
+import { setIsDrawerOpen } from '@/redux/features/drawers/drawersSlice';
+import { clearSelectedIngredient } from '@/redux/features/ingredients/ingredientsSlice';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { RootState } from '@/redux/store';
-import { setIsDrawerOpen } from '@/redux/features/drawers/drawersSlice';
-import IngredientForm from '@/components/inventory/IngredientForm';
-import { clearSelectedIngredient } from '@/redux/features/ingredients/ingredientsSlice';
 
 const IngredientEditDrawer = () => {
   const dispatch = useAppDispatch();
-  const isOpen = useAppSelector(
-    (state: RootState) => state.drawers.isDrawerOpen
-  );
-  const formData = useAppSelector(
-    (state: RootState) => state.ingredients.formInitialData
-  );
+  const isOpen = useAppSelector((state: RootState) => state.drawers.isDrawerOpen);
+  const formData = useAppSelector((state: RootState) => state.ingredients.formInitialData);
 
   const handleClose = () => {
     dispatch(setIsDrawerOpen(false));
@@ -35,9 +31,7 @@ const IngredientEditDrawer = () => {
       <DrawerContent>
         <DrawerHeader className="sr-only">
           <DrawerTitle>Update Ingredient</DrawerTitle>
-          <DrawerDescription>
-            Update the details of the ingredient.
-          </DrawerDescription>
+          <DrawerDescription>Update the details of the ingredient.</DrawerDescription>
         </DrawerHeader>
         <div className="mx-auto w-full px-10">
           <div>

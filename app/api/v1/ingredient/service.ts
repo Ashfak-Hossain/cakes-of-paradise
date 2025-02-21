@@ -1,7 +1,25 @@
 import { AppError, DatabaseError } from '@/app/api/v1/error/errorHandler';
 import { db } from '@/lib/db';
 import { Ingredient } from '@/schemas/ingredient';
-import { AddIngredientReturn } from '@/types/types';
+import { AddIngredientReturn, GetIngredientsReturn } from '@/types/types';
+
+export const getIngredients = async (): Promise<GetIngredientsReturn[]> => {
+  try {
+    const ingredients = await db.ingredient.findMany({
+      include: {
+        purchases: true,
+        supplier: {
+          select: { supplier_id: true, supplier_name: true },
+        },
+      },
+    });
+
+    return ingredients;
+  } catch (error: any) {
+    if (error instanceof AppError) throw error;
+    throw new DatabaseError('Error occurred while fetching ingredients', error);
+  }
+};
 
 export const addIngredient = async (validatedData: Ingredient): Promise<AddIngredientReturn> => {
   try {
