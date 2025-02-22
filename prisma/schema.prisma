@@ -62,6 +62,16 @@ model Product {
   orderDetails       OrderDetail[]
   productIngredients ProductIngredient[]
   category           Category            @relation(fields: [category_id], references: [category_id])
+  ProductionLog      ProductionLog[]
+}
+
+model ProductionLog {
+  production_log_id Int      @id @default(autoincrement())
+  product_id        Int
+  quantity          Int
+  production_date   DateTime @default(now())
+
+  product Product @relation(fields: [product_id], references: [product_id])
 }
 
 model Category {
@@ -87,7 +97,7 @@ model Order {
   order_date     DateTime      @default(now())
   total_amount   Decimal
   payment_method PaymentMethod
-  status         String        @default("pending")
+  status         Status        @default(PENDING)
 
   orderDetails OrderDetail[]
   customer     Customer?     @relation(fields: [customer_id], references: [customer_id])
