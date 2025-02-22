@@ -20,3 +20,20 @@ export const getIngredient = async (slug: string): Promise<Ingredient> => {
     throw new DatabaseError('Error fetching ingredient', error);
   }
 };
+
+export const updateIngredient = async (
+  slug: string,
+  data: { ingredient_name: string; reorder_level: number }
+): Promise<Ingredient> => {
+  try {
+    const ingredient = await db.ingredient.update({
+      where: { ingredient_id: Number(slug) },
+      data,
+    });
+
+    return ingredient;
+  } catch (error: any) {
+    if (error instanceof AppError) throw error;
+    throw new DatabaseError('Error updating ingredient', error);
+  }
+};
