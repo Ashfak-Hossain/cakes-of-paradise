@@ -47,7 +47,7 @@ export const purchaseIngredient = async (validatedData: IngredientPurchase): Pro
             connect: { ingredient_id },
           },
           change_amount: stock,
-          reference_type: 'purchase',
+          reference_type: 'PURCHASE',
           reference_id: newPurchase.purchase_id,
         },
       });

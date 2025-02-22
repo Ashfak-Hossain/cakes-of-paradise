@@ -58,16 +58,14 @@ const IngredientAnalytics = ({ data }: IngredientAnalyticsProps) => {
     setSelectedUnit(selectedIngredient.unit_of_measure);
 
     const result = selectedIngredient.purchases.reduce((acc, purchase) => {
-      const date = purchase.purchase_date.toISOString();
+      const date = new Date(purchase.purchase_date);
       const quantity = parseFloat(purchase.quantity.toString());
-      const existingEntry = acc.find(
-        (entry) => new Date(entry.date).getTime() === new Date(date).getTime()
-      );
+      const existingEntry = acc.find((entry) => new Date(entry.date).getTime() === date.getTime());
 
       if (existingEntry) {
         existingEntry.quantity += quantity;
       } else {
-        acc.push({ date, quantity });
+        acc.push({ date: date.toISOString().split('T')[0], quantity });
       }
       return acc;
     }, [] as chartData[]);
