@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Ingredient } from '@/schemas/ingredient';
-import { InventoryItem } from '@/services/inventory';
 
 interface IngredientState {
   formInitialData: Ingredient | null;
@@ -15,7 +14,7 @@ export const ingredientSlice = createSlice({
   name: 'ingredients',
   initialState,
   reducers: {
-    setSelectedIngredient: (state, action: PayloadAction<InventoryItem>) => {
+    setSelectedIngredient: (state, action: PayloadAction<any>) => {
       state.formInitialData = {
         ingredient_id: action.payload.ingredient_id,
         ingredient_name: action.payload.ingredient_name,
