@@ -16,6 +16,7 @@ class IngredientController {
       const ingredient = await addIngredient(validatedData);
       return ingredient;
     } catch (error: any) {
+      console.log(error);
       if (error.name === 'ZodError') throw new ValidationError(error.errors);
       else throw new ServerError();
     }

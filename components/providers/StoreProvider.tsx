@@ -1,9 +1,10 @@
 'use client';
 
-import { AppStore, makeStore } from '@/redux/store';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { useRef } from 'react';
 import { Provider } from 'react-redux';
+
+import { AppStore, makeStore } from '@/redux/store';
 // import { persistStore } from 'redux-persist';
 // import { PersistGate } from 'redux-persist/integration/react';
 // import { LoadingScreen } from '@/components/common/LoadingScreen';

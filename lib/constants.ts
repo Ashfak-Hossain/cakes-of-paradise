@@ -1,10 +1,10 @@
 import {
-  Layout,
   Archive,
-  Clipboard,
-  User,
-  SlidersHorizontal,
   CircleDollarSign,
+  Clipboard,
+  Layout,
+  SlidersHorizontal,
+  User,
 } from 'lucide-react';
 
 export const sidebarLinks = [
@@ -31,8 +31,7 @@ export const measurement_units = [
 export const API_ERROR = {
   DATABASE_ERROR: {
     error: 'DATABASE_ERROR',
-    message:
-      'An error occurred while processing your request. Please try again later.',
+    message: 'An error occurred while processing your request. Please try again later.',
   },
   VALIDATION_ERROR: {
     error: 'VALIDATION_ERROR',

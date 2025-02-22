@@ -82,7 +82,7 @@ export const addIngredient = async (validatedData: Ingredient): Promise<AddIngre
             connect: { ingredient_id: newIngredient.ingredient_id },
           },
           change_amount: current_stock,
-          reference_type: 'purchase',
+          reference_type: 'PURCHASE',
           reference_id: newPurchase.purchase_id,
         },
       });

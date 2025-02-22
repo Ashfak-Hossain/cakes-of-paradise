@@ -1,20 +1,20 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
+
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/data-table/data-table-row-actions';
-import { InventoryItem } from '@/services/inventory';
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { GetIngredientsReturn } from '@/types/types';
 
-export const columns: ColumnDef<InventoryItem>[] = [
+export const columns: ColumnDef<GetIngredientsReturn>[] = [
   {
     id: 'select',
     header: ({ table }) => (
       <Checkbox
         checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -32,9 +32,7 @@ export const columns: ColumnDef<InventoryItem>[] = [
   },
   {
     accessorKey: 'ingredient_name',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Ingredient" />
-    ),
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Ingredient" />,
   },
   {
     accessorKey: 'current_stock',
@@ -46,9 +44,7 @@ export const columns: ColumnDef<InventoryItem>[] = [
       const reorderLevel = row.getValue<number>('reorder_level') ?? 0;
 
       const stock =
-        typeof stockValue === 'number'
-          ? stockValue
-          : parseFloat(stockValue as string) || 0;
+        typeof stockValue === 'number' ? stockValue : parseFloat(stockValue as string) || 0;
 
       if (isNaN(stock)) {
         console.error("Invalid 'current_stock' value:", stockValue);

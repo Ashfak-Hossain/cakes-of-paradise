@@ -1,22 +1,21 @@
 'use client';
 
 import { Bell, Menu, Moon, Search, Settings, Sun } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTheme } from 'next-themes';
+
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { setIsSidebarCollapsed } from '@/redux/features/global/global';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { useTheme } from 'next-themes';
 
 const Navbar = () => {
   const { setTheme, theme } = useTheme();
   const isDarkMode = theme === 'dark';
 
   const dispatch = useAppDispatch();
-  const isSidebarCollapsed = useAppSelector(
-    (state) => state.global.isSidebarCollapsed
-  );
+  const isSidebarCollapsed = useAppSelector((state) => state.global.isSidebarCollapsed);
   const toggleSidebar = () => {
     dispatch(setIsSidebarCollapsed(!isSidebarCollapsed));
   };
@@ -60,10 +59,7 @@ const Navbar = () => {
           </Button>
 
           <div className="relative">
-            <Bell
-              className="cursor-pointer text-gray-500 dark:text-gray-400"
-              size={24}
-            />
+            <Bell className="cursor-pointer text-gray-500 dark:text-gray-400" size={24} />
             <span className="absolute -top-2 -right-2 inline-flex items-center justify-center px-[0.4rem] py-1 text-xs font-semibold leading-none text-red-100 dark:text-red-200 bg-red-500 dark:bg-red-600 rounded-full">
               3
             </span>
@@ -79,17 +75,12 @@ const Navbar = () => {
               height={50}
               className="rounded-full h-full object-cover"
             />
-            <span className="font-semibold text-gray-800 dark:text-gray-200">
-              Ashfak Hossain
-            </span>
+            <span className="font-semibold text-gray-800 dark:text-gray-200">Ashfak Hossain</span>
           </div>
         </div>
 
         <Link href="/settings">
-          <Settings
-            className="cursor-pointer text-gray-500 dark:text-gray-400"
-            size={24}
-          />
+          <Settings className="cursor-pointer text-gray-500 dark:text-gray-400" size={24} />
         </Link>
       </div>
     </div>

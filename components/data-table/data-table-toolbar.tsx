@@ -3,17 +3,15 @@
 import { Table } from '@tanstack/react-table';
 import { X } from 'lucide-react';
 
-import { Button } from '../ui/button';
-import { DataTableViewOptions } from './data-table-view-options';
-import { Input } from '../ui/input';
+import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
 
-export function DataTableToolbar<TData>({
-  table,
-}: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
   return (
@@ -21,14 +19,9 @@ export function DataTableToolbar<TData>({
       <div className="flex flex-1 items-center space-x-2">
         <Input
           placeholder="Filter Ingredients..."
-          value={
-            (table.getColumn('ingredient_name')?.getFilterValue() as string) ??
-            ''
-          }
+          value={(table.getColumn('ingredient_name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table
-              .getColumn('ingredient_name')
-              ?.setFilterValue(event.target.value)
+            table.getColumn('ingredient_name')?.setFilterValue(event.target.value)
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />

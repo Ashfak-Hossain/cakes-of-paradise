@@ -1,7 +1,8 @@
-import { cn } from '@/lib/utils';
 import { LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+
+import { cn } from '@/lib/utils';
 
 interface SidebarLinkProps {
   href: string;
@@ -10,12 +11,7 @@ interface SidebarLinkProps {
   isCollapsed: boolean;
 }
 
-const SidebarLink = ({
-  href,
-  icon: Icon,
-  label,
-  isCollapsed,
-}: SidebarLinkProps) => {
+const SidebarLink = ({ href, icon: Icon, label, isCollapsed }: SidebarLinkProps) => {
   const pathname = usePathname();
   const isActive = pathname === href;
   // || (pathname === '/' && href === '/dashboard')

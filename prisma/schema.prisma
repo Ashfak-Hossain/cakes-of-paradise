@@ -17,7 +17,8 @@ model Customer {
   created_at         DateTime  @default(now())
   last_purchase_date DateTime?
 
-  orders Order[]
+  orders      Order[]
+  CustomOrder CustomOrder[]
 }
 
 model Supplier {
@@ -34,31 +35,39 @@ model Supplier {
 }
 
 model Ingredient {
-  ingredient_id   Int       @id @default(autoincrement())
-  ingredient_name String    @unique
-  unit_of_measure String
-  current_stock   Decimal   @default(0)
-  reorder_level   Decimal?
+  ingredient_id   Int      @id @default(autoincrement())
   supplier_id     Int?
-  supplier        Supplier? @relation(fields: [supplier_id], references: [supplier_id])
+  ingredient_name String   @unique
+  unit_of_measure String
+  current_stock   Decimal  @default(0)
+  reorder_level   Decimal?
 
   productIngredients ProductIngredient[]
   inventoryLogs      InventoryLog[]
   purchases          Purchase[]
+  supplier           Supplier?           @relation(fields: [supplier_id], references: [supplier_id])
 }
 
 model Product {
   product_id   Int      @id @default(autoincrement())
   product_name String
+  category_id  Int
   description  String?
-  category     String
   price        Decimal
   cost_to_make Decimal
   is_available Boolean  @default(true)
   created_at   DateTime @default(now())
 
-  productIngredients ProductIngredient[]
+  Picture            Picture[]
   orderDetails       OrderDetail[]
+  productIngredients ProductIngredient[]
+  category           Category            @relation(fields: [category_id], references: [category_id])
+}
+
+model Category {
+  category_id   Int       @id @default(autoincrement())
+  category_name String    @unique
+  products      Product[]
 }
 
 model ProductIngredient {
@@ -69,31 +78,82 @@ model ProductIngredient {
   product    Product    @relation(fields: [product_id], references: [product_id])
   ingredient Ingredient @relation(fields: [ingredient_id], references: [ingredient_id])
 
-  @@id([product_id, ingredient_id]) // Composite primary key
+  @@id([product_id, ingredient_id])
 }
 
 model Order {
-  order_id       Int      @id @default(autoincrement())
+  order_id       Int           @id @default(autoincrement())
   customer_id    Int?
-  order_date     DateTime @default(now())
+  order_date     DateTime      @default(now())
   total_amount   Decimal
-  payment_method String?
-  status         String   @default("pending")
+  payment_method PaymentMethod
+  status         String        @default("pending")
 
-  customer     Customer?     @relation(fields: [customer_id], references: [customer_id])
   orderDetails OrderDetail[]
+  customer     Customer?     @relation(fields: [customer_id], references: [customer_id])
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  BKASH
+  NAGAD
+  ROCKET
+  BANK_TRANSFER
 }
 
 model OrderDetail {
   order_detail_id Int     @id @default(autoincrement())
   order_id        Int
-  product_id      Int
+  product_id      Int?
+  custom_order_id Int?
   quantity        Int
   unit_price      Decimal
   total_price     Decimal
 
-  order   Order   @relation(fields: [order_id], references: [order_id])
-  product Product @relation(fields: [product_id], references: [product_id])
+  order       Order?       @relation(fields: [order_id], references: [order_id])
+  product     Product?     @relation(fields: [product_id], references: [product_id])
+  customOrder CustomOrder? @relation(fields: [custom_order_id], references: [custom_order_id])
+}
+
+model CustomOrder {
+  custom_order_id  Int       @id @default(autoincrement())
+  customer_id      Int?
+  occasion         String?
+  flavor           String?
+  size             String?
+  icing            String?
+  decorations      String?
+  special_requests String?
+  delivery_date    DateTime?
+  delivery_address String?
+  delivery_time    String?
+  status           Status    @default(PENDING)
+  created_at       DateTime  @default(now())
+  updated_at       DateTime?
+  price            Decimal?
+  notes            String?
+
+  orderDetails OrderDetail[]
+  Picture      Picture[]
+  customer     Customer?     @relation(fields: [customer_id], references: [customer_id])
+}
+
+enum Status {
+  PENDING
+  CONFIRMED
+  BAKING
+  DELIVERED
+  CANCELLED
+}
+
+model Picture {
+  picture_id      Int          @id @default(autoincrement())
+  url             String
+  custom_order_id Int?
+  product_id      Int?
+  customOrder     CustomOrder? @relation(fields: [custom_order_id], references: [custom_order_id])
+  product         Product?     @relation(fields: [product_id], references: [product_id])
 }
 
 model Purchase {
@@ -109,18 +169,18 @@ model Purchase {
   ingredient Ingredient @relation(fields: [ingredient_id], references: [ingredient_id])
 }
 
-// enum ReferenceType {
-//   PURCHASE
-//   ORDER
-//   ADJUSTMENT
-// }
+enum ReferenceType {
+  PURCHASE
+  ORDER
+  ADJUSTMENT
+}
 
 model InventoryLog {
-  log_id         Int      @id @default(autoincrement())
+  log_id         Int           @id @default(autoincrement())
   ingredient_id  Int
   change_amount  Decimal
-  log_date       DateTime @default(now())
-  reference_type String
+  log_date       DateTime      @default(now())
+  reference_type ReferenceType
   reference_id   Int?
 
   ingredient Ingredient @relation(fields: [ingredient_id], references: [ingredient_id])

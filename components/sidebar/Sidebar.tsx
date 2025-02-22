@@ -1,19 +1,18 @@
 'use client';
 
 import { Menu } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { setIsSidebarCollapsed } from '@/redux/features/global/global';
-import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import SidebarLink from './SidebarLink';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+
+import SidebarLink from '@/components/sidebar/SidebarLink';
+import { Button } from '@/components/ui/button';
 import { sidebarLinks } from '@/lib/constants';
+import { cn } from '@/lib/utils';
+import { setIsSidebarCollapsed } from '@/redux/features/global/global';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
-  const isSidebarCollapsed = useAppSelector(
-    (state) => state.global.isSidebarCollapsed
-  );
+  const isSidebarCollapsed = useAppSelector((state) => state.global.isSidebarCollapsed);
 
   const toggleSidebar = () => {
     dispatch(setIsSidebarCollapsed(!isSidebarCollapsed));
