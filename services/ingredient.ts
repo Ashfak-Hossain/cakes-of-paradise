@@ -3,7 +3,7 @@ import { fetcher } from '@/lib/fetcher';
 import { GetIngredientsReturn } from '@/types/types';
 
 export const getIngredient = async (): Promise<ApiResponse<GetIngredientsReturn[]>> => {
-  return fetcher(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/ingredient`, {
+  return fetcher('/api/v1/ingredient', {
     cache: 'no-cache',
   });
 };

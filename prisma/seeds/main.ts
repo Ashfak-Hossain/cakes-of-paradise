@@ -78,8 +78,9 @@ async function seed() {
       product_name: faker.commerce.productName(),
       description: faker.lorem.sentence(),
       category_id: faker.helpers.arrayElement(createdCategories).category_id,
-      price: faker.number.float({ min: 5, max: 50 }),
-      cost_to_make: faker.number.float({ min: 2, max: 20 }),
+      price: faker.number.float({ min: 5, max: 250 }),
+      cost_to_make: faker.number.float({ min: 2, max: 200 }),
+      current_stock: faker.number.int({ min: 0, max: 50 }),
     }));
     await prisma.product.createMany({ data: products });
     const createdProducts = await prisma.product.findMany();
@@ -90,7 +91,7 @@ async function seed() {
       order_date: faker.date.recent(),
       total_amount: faker.number.float({ min: 10, max: 200 }),
       payment_method: faker.helpers.arrayElement(Object.values(PaymentMethod)),
-      status: faker.helpers.arrayElement(['pending', 'processing', 'fulfilled']),
+      status: faker.helpers.arrayElement(['PENDING', 'CONFIRMED', 'BAKING']),
     }));
     await prisma.order.createMany({ data: orders });
     const createdOrders = await prisma.order.findMany();

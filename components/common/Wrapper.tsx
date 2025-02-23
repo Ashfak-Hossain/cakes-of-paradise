@@ -16,11 +16,11 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   if (isDocsPath) return <>{children}</>;
 
   return (
-    <div className="flex bg-gray-50 text-gray-900 w-full min-h-screen">
+    <div className="flex bg-gray-50 text-gray-900 w-full min-h-screen dark:bg-gray-800 dark:text-gray-100">
       <Sidebar />
       <main
         className={cn(
-          'flex flex-col w-full h-full py-7 px-9 bg-gray-50',
+          'flex flex-col w-full h-full py-7 px-9 bg-gray-50 dark:bg-gray-800 transition-all duration-300',
           isSidebarCollapsed ? 'md:pl-24' : 'md:pl-72'
         )}
       >

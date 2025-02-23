@@ -49,14 +49,15 @@ model Ingredient {
 }
 
 model Product {
-  product_id   Int      @id @default(autoincrement())
-  product_name String
-  category_id  Int
-  description  String?
-  price        Decimal
-  cost_to_make Decimal
-  is_available Boolean  @default(true)
-  created_at   DateTime @default(now())
+  product_id    Int      @id @default(autoincrement())
+  product_name  String
+  category_id   Int
+  description   String?
+  price         Decimal
+  cost_to_make  Decimal
+  current_stock Int      @default(0)
+  is_available  Boolean  @default(false)
+  created_at    DateTime @default(now())
 
   Picture            Picture[]
   orderDetails       OrderDetail[]

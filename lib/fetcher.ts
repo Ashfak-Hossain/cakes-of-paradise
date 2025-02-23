@@ -35,6 +35,8 @@ function logError(error: Error, url: string) {
   }
 }
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 /**
  * A highly robust, production-ready fetcher function with error handling, retries, and validation.
  *
@@ -57,6 +59,8 @@ export async function fetcher<T>(
     err instanceof RetryableError && attempt < retries - 1
 ): Promise<T> {
   const isDebug = process.env.DEBUG === 'true';
+
+  url = `${BASE_URL}${url}`;
 
   for (let i = 0; i < retries; i++) {
     try {
@@ -81,27 +85,17 @@ export async function fetcher<T>(
       clearTimeout(timeoutId);
 
       if (!res.ok) {
-        const errorData = await res
-          .json()
-          .catch(() => ({ error: res.statusText }));
+        const errorData = await res.json().catch(() => ({ error: res.statusText }));
         const parsedError = ApiErrorSchema.safeParse(errorData);
 
         let message: string;
         if (parsedError.success) {
-          message = `${parsedError.data.error} (${url}) - ${
-            parsedError.data.code || ''
-          }`;
+          message = `${parsedError.data.error} (${url}) - ${parsedError.data.code || ''}`;
         } else {
-          message = `Unexpected error format at ${url}: ${JSON.stringify(
-            errorData
-          )}`;
+          message = `Unexpected error format at ${url}: ${JSON.stringify(errorData)}`;
         }
 
-        if (
-          res.status >= 400 &&
-          res.status < 500 &&
-          ![408, 429, 425].includes(res.status)
-        ) {
+        if (res.status >= 400 && res.status < 500 && ![408, 429, 425].includes(res.status)) {
           throw new NonRetryableError(message);
         }
 
@@ -113,9 +107,7 @@ export async function fetcher<T>(
       try {
         return data;
       } catch (validationError) {
-        const message = `Data validation error at ${url}: ${
-          (validationError as Error).message
-        }`;
+        const message = `Data validation error at ${url}: ${(validationError as Error).message}`;
         throw new NonRetryableError(message);
       }
     } catch (error: any) {
