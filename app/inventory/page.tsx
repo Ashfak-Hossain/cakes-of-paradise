@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import { Suspense } from 'react';
 
+import { ApiResponse } from '@/app/api/v1/types/types';
 import SectionHeader from '@/components/common/SectionHeader';
 import { DataTable } from '@/components/data-table/data-table';
 import { columns } from '@/components/inventory/columns';
@@ -10,11 +11,16 @@ import IngredientEditDrawer from '@/components/inventory/IngredientEditDrawer';
 import IngredientForm from '@/components/inventory/IngredientForm';
 import IngredientPurchaseDrawer from '@/components/inventory/IngredientPurchaseDrawer';
 import { Separator } from '@/components/ui/separator';
-import { getIngredient } from '@/services/ingredient';
+import { fetcher } from '@/lib/fetcher';
+import { GetIngredientsReturn } from '@/types/types';
 
 export const metadata: Metadata = {
   title: 'Inventory Management',
   description: 'Manage your inventory of ingredients',
+};
+
+const getIngredient = async (): Promise<ApiResponse<GetIngredientsReturn[]>> => {
+  return fetcher('/api/v1/ingredient', { cache: 'no-cache' });
 };
 
 const page = async () => {

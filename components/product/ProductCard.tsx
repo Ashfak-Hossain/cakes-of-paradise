@@ -1,5 +1,6 @@
 'use client';
 
+import { Microwave } from 'lucide-react';
 import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,7 @@ const ProductionCard: React.FC<ProductionCardProps> = ({ imageUrl, title, stockQ
         <div className="flex justify-between items-center mt-3">
           <Button variant="outline" size="sm" onClick={onAddProduction}>
             Add Production
+            <Microwave />
           </Button>
           <Button variant="outline" size="sm" onClick={onViewDetails}>
             View Details
