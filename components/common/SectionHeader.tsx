@@ -5,7 +5,7 @@ interface SectionHeaderProps {
 
 const SectionHeader = ({ title, subtitle }: SectionHeaderProps) => {
   return (
-    <div className="space-y-2 mb-5">
+    <div className="space-y-2 mb-3">
       <div>
         <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
           {title}
