@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, Product } from '@prisma/client';
 
 import { AddIngredient, Ingredient } from '@/schemas/ingredient';
 import { Purchase } from '@/schemas/purchase';
@@ -19,4 +19,13 @@ export interface GetIngredientsReturn extends Omit<Ingredient, 'cost' | 'stock' 
     'contact_name' | 'phone' | 'email' | 'supplied_ingredients' | 'payment_terms'
   > | null;
   purchases: Purchase[];
+}
+
+export interface getProductsReturn {
+  products: Product[];
+  totalCount: number;
+}
+
+export interface ProductPageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
