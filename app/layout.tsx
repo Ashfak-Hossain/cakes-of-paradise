@@ -2,7 +2,6 @@ import '@/app/globals.css';
 
 import type { Metadata } from 'next';
 
-import DashboardLayout from '@/components/common/Wrapper';
 import Providers from '@/components/providers/Providers';
 import { Toaster } from '@/components/ui/sonner';
 import { geistMono, geistSans } from '@/lib/font';
@@ -21,7 +20,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning={true}>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
-          <DashboardLayout>{children}</DashboardLayout>
+          {children}
           <Toaster />
         </Providers>
       </body>
