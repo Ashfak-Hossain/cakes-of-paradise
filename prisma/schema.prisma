@@ -62,9 +62,9 @@ model Product {
 
   Picture            Picture[]
   orderDetails       OrderDetail[]
+  ProductionLog      ProductionLog[]
   productIngredients ProductIngredient[]
   category           Category            @relation(fields: [category_id], references: [category_id])
-  ProductionLog      ProductionLog[]
 }
 
 model ProductionLog {
