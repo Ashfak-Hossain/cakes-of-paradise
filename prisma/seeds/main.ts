@@ -15,14 +15,51 @@ async function seed() {
     await prisma.product.deleteMany({});
     await prisma.ingredient.deleteMany({});
     await prisma.supplier.deleteMany({});
-    await prisma.customer.deleteMany({});
     await prisma.category.deleteMany({});
     await prisma.customOrder.deleteMany({});
+    await prisma.session.deleteMany({});
+    await prisma.account.deleteMany({});
+    await prisma.user.deleteMany({});
+    await prisma.role.deleteMany({});
+    await prisma.verificationToken.deleteMany({});
+    await prisma.passwordResetToken.deleteMany({});
+    await prisma.twoFactorToken.deleteMany({});
+    await prisma.twoFactorConfirmation.deleteMany({});
+
+    //* Create Roles
+    const roles = ['Admin', 'Customer', 'Sales'].map((name, index) => ({
+      id: index + 1,
+      name,
+      description: `${name} Role`,
+    }));
+    await prisma.role.createMany({ data: roles });
+    const createdRoles = await prisma.role.findMany();
+
+    //* Create Users
+    const users = Array.from({ length: 50 }).map(() => ({
+      name: faker.person.fullName(),
+      email: faker.internet.email(),
+      phone: faker.phone.number(),
+      address: faker.location.streetAddress(),
+      roleId: faker.helpers.arrayElement(createdRoles).id,
+    }));
+    await prisma.user.createMany({ data: users });
+    const createdUsers = await prisma.user.findMany();
 
     //* Create Categories
-    const categories = Array.from({ length: 5 }).map(() => ({
-      category_name: faker.commerce.department(),
-    }));
+    const categoryNames = new Set<string>();
+    const categories = Array.from({ length: 5 }).map(() => {
+      let categoryName = faker.commerce.department();
+      // Ensure unique category names
+      while (categoryNames.has(categoryName)) {
+        categoryName = faker.commerce.department();
+      }
+      categoryNames.add(categoryName);
+
+      return {
+        category_name: categoryName,
+      };
+    });
     await prisma.category.createMany({ data: categories });
     const createdCategories = await prisma.category.findMany();
 
@@ -61,18 +98,6 @@ async function seed() {
     await prisma.ingredient.createMany({ data: ingredients });
     const createdIngredients = await prisma.ingredient.findMany();
 
-    //* Create Customers
-    const customers = Array.from({ length: 100 }).map(() => ({
-      first_name: faker.person.firstName(),
-      last_name: faker.person.lastName(),
-      phone: faker.phone.number(),
-      email: faker.internet.email(),
-      address: faker.location.streetAddress(),
-      last_purchase_date: faker.date.past(),
-    }));
-    await prisma.customer.createMany({ data: customers });
-    const createdCustomers = await prisma.customer.findMany();
-
     //* Create Products
     const products = Array.from({ length: 30 }).map(() => ({
       product_name: faker.commerce.productName(),
@@ -87,7 +112,7 @@ async function seed() {
 
     //* Create Orders
     const orders = Array.from({ length: 100 }).map(() => ({
-      customer_id: faker.helpers.arrayElement(createdCustomers).customer_id,
+      userId: faker.helpers.arrayElement(createdUsers).id,
       order_date: faker.date.recent(),
       total_amount: faker.number.float({ min: 10, max: 200 }),
       payment_method: faker.helpers.arrayElement(Object.values(PaymentMethod)),

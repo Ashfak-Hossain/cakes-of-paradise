@@ -8,18 +8,101 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Customer {
-  customer_id        Int       @id @default(autoincrement())
-  first_name         String
-  last_name          String
-  phone              String    @unique
-  email              String?
-  address            String?
-  created_at         DateTime  @default(now())
-  last_purchase_date DateTime?
+model User {
+  id                    String                 @id @default(cuid())
+  roleId                Int
+  name                  String?
+  phone                 String?                @unique
+  email                 String                 @unique
+  emailVerified         DateTime?
+  image                 String?
+  password              String?
+  address               String?
+  last_purchase_date    DateTime?
+  isTwoFactorEnabled    Boolean?               @default(false)
+  TwoFactorConfirmation TwoFactorConfirmation?
 
+  accounts    Account[]
+  sessions    Session[]
   orders      Order[]
   CustomOrder CustomOrder[]
+
+  role Role @relation(fields: [roleId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Role {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
+  users       User[]
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model PasswordResetToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model TwoFactorToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model TwoFactorConfirmation {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
 }
 
 model Supplier {
@@ -95,14 +178,15 @@ model ProductIngredient {
 
 model Order {
   order_id       Int           @id @default(autoincrement())
-  customer_id    Int?
+  userId         String
   order_date     DateTime      @default(now())
   total_amount   Decimal
   payment_method PaymentMethod
   status         Status        @default(PENDING)
 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   orderDetails OrderDetail[]
-  customer     Customer?     @relation(fields: [customer_id], references: [customer_id])
 }
 
 enum PaymentMethod {
@@ -130,7 +214,7 @@ model OrderDetail {
 
 model CustomOrder {
   custom_order_id  Int       @id @default(autoincrement())
-  customer_id      Int?
+  userId           String?
   occasion         String?
   flavor           String?
   size             String?
@@ -146,9 +230,10 @@ model CustomOrder {
   price            Decimal?
   notes            String?
 
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   orderDetails OrderDetail[]
   Picture      Picture[]
-  customer     Customer?     @relation(fields: [customer_id], references: [customer_id])
 }
 
 enum Status {
