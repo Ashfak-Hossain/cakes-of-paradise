@@ -133,21 +133,24 @@ model Ingredient {
 }
 
 model Product {
-  product_id    Int      @id @default(autoincrement())
+  product_id    Int       @id @default(autoincrement())
   product_name  String
   category_id   Int
   description   String?
   price         Decimal
   cost_to_make  Decimal
-  current_stock Int      @default(0)
-  is_available  Boolean  @default(false)
-  created_at    DateTime @default(now())
+  current_stock Int       @default(0)
+  is_available  Boolean   @default(false)
+  created_at    DateTime  @default(now())
+  deletedAt     DateTime?
 
   Picture            Picture[]
   orderDetails       OrderDetail[]
   ProductionLog      ProductionLog[]
   productIngredients ProductIngredient[]
   category           Category            @relation(fields: [category_id], references: [category_id])
+
+  @@index([category_id])
 }
 
 model ProductionLog {

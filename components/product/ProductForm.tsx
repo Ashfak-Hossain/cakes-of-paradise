@@ -1,52 +1,32 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { toast } from 'sonner';
 
+import { CustomFormField } from '@/components/common/CustomFormField';
+import LoadingOverlay from '@/components/common/LoadingOverlay';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-
-export const productSchema = z.object({
-  product_name: z.string().min(2, {
-    message: "Product name can't be empty",
-  }),
-  description: z.string().optional().nullable(),
-  //   price: z.instanceof(Prisma.Decimal, {
-  //     message: "Price can't be less than 0",
-  //   }),
-  price: z.number().int().nonnegative().min(1, {
-    message: "Price can't be less than 0",
-  }),
-  //   cost_to_make: z.instanceof(Prisma.Decimal).optional().nullable(),
-  cost_to_make: z.number().int().nonnegative().min(1, {
-    message: "Cost can't be less than 0",
-  }),
-  current_stock: z.coerce.number().int().nonnegative().default(0),
-  is_available: z.boolean().default(false),
-  image: z
-    .any()
-    .refine((files) => files?.[0]?.size <= 5 * 1024 * 1024, `Max image size is 5MB.`)
-    .refine(
-      (files) => ['image/jpeg', 'image/png', 'image/webp'].includes(files?.[0]?.type),
-      'Only .jpg, .png, .webp formats are supported.'
-    )
-    .optional()
-    .nullable(),
-});
-
-export type ProductSchemaType = z.infer<typeof productSchema>;
+import { Form } from '@/components/ui/form';
+import { useGetCategoriesQuery } from '@/redux/features/api/categories/categoriesApiSlice';
+import { productSchema, ProductSchemaType } from '@/schemas/product';
 
 const ProductForm = () => {
+  const {
+    data: categories,
+    isLoading: isCategoriesLoading,
+    isFetching: isCategoriesFetching,
+    isError,
+  } = useGetCategoriesQuery();
+
+  const categoryOptions = categories?.data
+    ? categories.data.map((category) => ({
+        value: category.category_id.toString(), //* this converts to number in zod schema
+        label: category.category_name,
+      }))
+    : [];
+
   const defaultValues: ProductSchemaType = {
     product_name: '',
     description: '',
@@ -55,6 +35,7 @@ const ProductForm = () => {
     current_stock: 0,
     is_available: false,
     image: null,
+    category_id: undefined,
   };
 
   const form = useForm<ProductSchemaType>({
@@ -63,67 +44,58 @@ const ProductForm = () => {
     mode: 'onBlur',
   });
 
+  useEffect(() => {
+    if (isError) {
+      toast.error('Failed to fetch categories');
+    }
+  }, [isError]);
+
   const onSubmit = (values: ProductSchemaType) => {
+    //! have to handle image upload here
     console.log(values);
   };
 
   return (
-    <div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
-            {/* Left Column */}
-            <div className="space-y-4">
-              {/* Product Name */}
-              <FormField
-                control={form.control}
-                name="product_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Product Name <span className="text-red-500">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input placeholder="" {...field} />
-                    </FormControl>
-                    <FormDescription>This is the name of the product</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
+          {/* Left Column */}
+          <div className="space-y-4">
+            <CustomFormField name="product_name" label="Product Name" required />
+            <CustomFormField name="current_stock" label="Current Stock" type="number" required />
+            {isCategoriesLoading ? (
+              <LoadingOverlay
+                isLoading={isCategoriesLoading}
+                isFetching={isCategoriesFetching}
+                message="Loading Category"
               />
-            </div>
-            {/* Right Column */}
-            <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Price <span className="text-red-500">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="0"
-                        //! start from here. i have to create custom input component for form. and then some changes with edroh and s3 setup for image upload
-                        // onChange={(e) => Number(e.target.value)}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      This is the price at which the product will be sold
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            ) : (
+              <CustomFormField
+                name="category_id"
+                label="Category"
+                type="select"
+                options={categoryOptions}
+                disabled={isCategoriesLoading}
+                required
               />
-            </div>
+            )}
+            <CustomFormField name="description" label="Description" type="textarea" />
+            <CustomFormField name="is_available" label="Is Available" type="switch" />
           </div>
-          <Button type="submit">Submit</Button>
-        </form>
-      </Form>
-    </div>
+          {/* Right Column */}
+          <div className="space-y-4">
+            <CustomFormField name="price" label="Price" type="number" />
+            <CustomFormField
+              name="cost_to_make"
+              label="Cost to Make (can be empty)"
+              type="number"
+            />
+            <CustomFormField name="image" label="Image" type="file" accept="image/*" />
+          </div>
+        </div>
+        <Button type="submit">Submit</Button>
+      </form>
+    </Form>
   );
 };
 

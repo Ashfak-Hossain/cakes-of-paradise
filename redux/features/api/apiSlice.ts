@@ -8,7 +8,7 @@ const baseQuery = fetchBaseQuery({
 });
 
 // Tag types for the API slice.
-const tagTypes: string[] = ['Supplier'];
+const tagTypes: string[] = ['Supplier', 'Category'];
 
 /**
  **   Base API Slice
