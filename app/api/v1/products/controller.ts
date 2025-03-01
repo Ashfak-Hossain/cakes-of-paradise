@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server';
 
+import { DEFAULT_LIMIT, DEFAULT_PAGE } from '@/app/(Dashboard)/products/page';
 import { ServerError } from '@/app/api/v1/error/errorHandler';
 import { getProducts } from '@/app/api/v1/products/service';
-import { DEFAULT_LIMIT, DEFAULT_PAGE } from '@/app/(Dashboard)/products/page';
 
 class ProductController {
   /**

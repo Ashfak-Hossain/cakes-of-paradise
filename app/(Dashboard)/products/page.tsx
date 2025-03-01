@@ -12,7 +12,7 @@ const getProducts = async (
   page: string,
   limit: string
 ): Promise<ApiResponse<getProductsReturn>> => {
-  return fetcher(`/api/v1/products?page=${page}&limit=${limit}`);
+  return fetcher({ url: `/products?page=${page}&limit=${limit}` });
 };
 
 export const LIMIT_OPTIONS = [4, 8, 16, 24, 40];

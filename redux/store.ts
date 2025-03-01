@@ -1,20 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import {
-  persistReducer,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from 'redux-persist';
+import { FLUSH, PAUSE, PERSIST, persistReducer, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
-import globalReducer from '@/redux/features/global/global';
+
 import { apiSlice } from '@/redux/features/api/apiSlice';
-import { ingredientSlice } from '@/redux/features/ingredients/ingredientsSlice';
 import { drawersSlice } from '@/redux/features/drawers/drawersSlice';
+import globalReducer from '@/redux/features/global/global';
+import { ingredientSlice } from '@/redux/features/ingredients/ingredientsSlice';
 
 /* REDUX PERSISTENCE */
 const createNoopStorage = () => {
@@ -31,10 +22,7 @@ const createNoopStorage = () => {
   };
 };
 
-const storage =
-  typeof window === 'undefined'
-    ? createNoopStorage()
-    : createWebStorage('local');
+const storage = typeof window === 'undefined' ? createNoopStorage() : createWebStorage('local');
 
 const persistConfig = {
   key: 'root',

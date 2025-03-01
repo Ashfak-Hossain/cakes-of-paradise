@@ -7,10 +7,13 @@ import { useTheme } from 'next-themes';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useCurrentUser } from '@/hooks/auth';
 import { setIsSidebarCollapsed } from '@/redux/features/global/global';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 
 const Navbar = () => {
+  const user = useCurrentUser();
+
   const { setTheme, theme } = useTheme();
   const isDarkMode = theme === 'dark';
 
@@ -75,7 +78,7 @@ const Navbar = () => {
               height={50}
               className="rounded-full h-full object-cover"
             />
-            <span className="font-semibold text-gray-800 dark:text-gray-200">Ashfak Hossain</span>
+            <span className="font-semibold text-gray-800 dark:text-gray-200">{user?.name}</span>
           </div>
         </div>
 

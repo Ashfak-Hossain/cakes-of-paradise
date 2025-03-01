@@ -1,7 +1,12 @@
-import React from 'react';
+import HomeNavbar from '@/components/navbar/HomeNavbar';
 
-const layout = ({ children }: { children: React.ReactNode }) => {
-  return <div>{children}</div>;
+const layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <>
+      <HomeNavbar />
+      {children}
+    </>
+  );
 };
 
 export default layout;

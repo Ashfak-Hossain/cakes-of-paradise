@@ -1,7 +1,5 @@
-export const runtime = 'nodejs';
-
 import { PrismaAdapter } from '@auth/prisma-adapter';
-import JWT, { JwtPayload } from 'jsonwebtoken';
+import { jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import type { NextAuthConfig } from 'next-auth';
 import NextAuth from 'next-auth';
@@ -21,7 +19,6 @@ export const config = {
     logo: 'https://next-auth.js.org/img/logo/logo-sm.png',
   },
   secret: process.env.AUTH_SECRET,
-  // debug: process.env.NODE_ENV === 'development',
   providers: [
     GitHub({
       clientId: process.env.GITHUB_CLIENT_ID,
@@ -79,40 +76,39 @@ export const config = {
         token.role = user.role;
         token.accessToken = (user as any).accessToken;
       }
+
       if (token.accessToken && typeof token.accessToken === 'string') {
         try {
-          const decodedAccessToken = JWT.verify(
-            token.accessToken,
-            process.env.JWT_ACCESS_SECRET!
-          ) as JwtPayload;
-          token.accessTokenExpires = decodedAccessToken.exp! * 1000;
-        } catch (error) {
-          console.error('JWT verify error: ', error);
+          const secret = new TextEncoder().encode(process.env.JWT_ACCESS_SECRET!);
+          const { payload } = await jwtVerify(token.accessToken, secret);
+          token.accessTokenExpires = (payload.exp as number) * 1000;
+        } catch (_error) {
           token.error = 'RefreshAccessTokenError';
         }
       }
 
       if (token.accessTokenExpires && Date.now() > Number(token.accessTokenExpires)) {
+        const cookieStore = await cookies();
         try {
           const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin': '*',
-            },
+            credentials: 'include',
+            headers: { Cookie: cookieStore.toString() },
           });
 
           const { success, data } = await res.json();
 
-          if (!res.ok || !success) return null;
+          if (!res.ok || !success) throw new Error('RefreshAccessTokenError');
 
           const { accessToken: newAccessToken } = data;
 
           token.accessToken = newAccessToken;
 
-          const decoded = JWT.verify(newAccessToken, process.env.JWT_ACCESS_SECRET!) as any;
-          token.accessTokenExpires = decoded.exp * 1000;
-        } catch (_error) {
+          const secret = new TextEncoder().encode(process.env.JWT_ACCESS_SECRET!);
+          const { payload } = await jwtVerify(newAccessToken, secret);
+          token.accessTokenExpires = (payload.exp as number) * 1000;
+        } catch (error) {
+          console.error('Token refresh error: ', error);
           token.error = 'RefreshAccessTokenError';
         }
       }

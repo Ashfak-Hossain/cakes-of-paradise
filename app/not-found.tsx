@@ -20,7 +20,7 @@ export default function NotFound() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <div className="relative w-96 h-96 mb-8">
-        <Image src="/404.png" alt="Page Not Found" layout="fill" objectFit="contain" priority />
+        <Image src="/404.png" width={400} height={400} alt="Page Not Found" priority />
       </div>
 
       <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-200 mb-4">Page Not Found</h1>

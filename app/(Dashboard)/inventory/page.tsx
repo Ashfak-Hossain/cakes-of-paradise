@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 };
 
 const getIngredient = async (): Promise<ApiResponse<GetIngredientsReturn[]>> => {
-  return fetcher('/api/v1/ingredient', { cache: 'no-cache' });
+  return fetcher({ url: '/ingredient', init: { cache: 'no-cache' } });
 };
 
 const page = async () => {

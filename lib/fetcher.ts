@@ -1,5 +1,4 @@
 import { z } from 'zod';
-// import { captureException } from '@sentry/node'; // For logging (optional)
 
 const ApiErrorSchema = z.object({
   error: z.string(),
@@ -23,44 +22,47 @@ class NonRetryableError extends Error {
   }
 }
 
-/**
- * Logs error details to the console or external services like Sentry.
- */
 function logError(error: Error, url: string) {
   if (process.env.NODE_ENV === 'production') {
-    // captureException(error); // Send to Sentry (optional)
     console.error('Something went wrong in fetcher');
   } else {
     console.error(`Error in fetcher (${url}):`, error);
   }
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+interface FetcherOptions<T> {
+  url: string;
+  init?: RequestInit;
+  retries?: number;
+  backoff?: number;
+  timeout?: number;
+  shouldRetry?: (error: any, attempt: number) => boolean;
+  validationSchema?: z.ZodSchema<T>;
+  transform?: (data: any) => T;
+}
 
 /**
  * A highly robust, production-ready fetcher function with error handling, retries, and validation.
  *
- * @param url The API endpoint to fetch data from.
- * @param schema Zod schema to validate the response.
- * @param retries Number of retry attempts on failure.
- * @param backoff Initial delay for exponential backoff (ms).
- * @param timeout Request timeout in milliseconds.
- * @param init Optional fetch request settings.
- * @param shouldRetry Optional custom retry logic.
+ * @param options Fetcher options.
  * @returns Parsed and validated response data.
  */
-export async function fetcher<T>(
-  url: string,
-  init?: RequestInit,
-  retries = 3,
-  backoff = 1000,
-  timeout = 10000,
-  shouldRetry: (error: any, attempt: number) => boolean = (err, attempt) =>
-    err instanceof RetryableError && attempt < retries - 1
-): Promise<T> {
-  const isDebug = process.env.DEBUG === 'true';
+export async function fetcher<T>(options: FetcherOptions<T>): Promise<T> {
+  const {
+    url: relativeUrl,
+    init = {},
+    retries = 3,
+    backoff = 1000,
+    timeout = 10000,
+    shouldRetry = (err, attempt) => err instanceof RetryableError && attempt < retries - 1,
+    validationSchema,
+    transform,
+  } = options;
 
-  url = `${BASE_URL}${url}`;
+  const isDebug = process.env.DEBUG === 'true';
+  const url = `${BASE_URL}${relativeUrl}`;
 
   for (let i = 0; i < retries; i++) {
     try {
@@ -69,7 +71,7 @@ export async function fetcher<T>(
 
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
-        ...(init?.headers as HeadersInit),
+        ...(init.headers as HeadersInit),
       };
 
       if (isDebug) {
@@ -102,14 +104,22 @@ export async function fetcher<T>(
         throw new RetryableError(message);
       }
 
-      const data = await res.json();
+      let data = await res.json();
 
-      try {
-        return data;
-      } catch (validationError) {
-        const message = `Data validation error at ${url}: ${(validationError as Error).message}`;
-        throw new NonRetryableError(message);
+      if (transform) {
+        data = transform(data);
       }
+
+      if (validationSchema) {
+        try {
+          validationSchema.parse(data);
+        } catch (validationError) {
+          const message = `Data validation error at ${url}: ${(validationError as Error).message}`;
+          throw new NonRetryableError(message);
+        }
+      }
+
+      return data;
     } catch (error: any) {
       logError(error, url);
 
@@ -125,7 +135,6 @@ export async function fetcher<T>(
         throw new Error('Request failed after multiple attempts');
       }
 
-      // Exponential backoff with jitter
       const delay = backoff * 2 ** i + Math.random() * backoff;
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
