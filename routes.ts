@@ -1,6 +1,6 @@
 export const publicRoutes: string[] = ['/'];
 
-export const adminRoutes: string[] = ['/dashboard', '/inventory'];
+export const adminRoutes: string[] = ['/dashboard', '/inventory', '/products'];
 
 export const authRoutes: string[] = [
   '/auth/signin',

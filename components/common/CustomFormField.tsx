@@ -74,6 +74,7 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
   disabled = false,
   isIcon = false,
   initialValue,
+  multiple = true,
 }) => {
   const { control } = useFormContext();
 
@@ -133,7 +134,7 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
               const files = fileItems.map((fileItem) => fileItem.file);
               field.onChange(files);
             }}
-            allowMultiple={true}
+            allowMultiple={multiple}
             labelIdle={`Drag & Drop your images or <span class="filepond--label-action">Browse</span>`}
             credits={false}
           />

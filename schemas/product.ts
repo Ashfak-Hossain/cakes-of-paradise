@@ -19,17 +19,20 @@ export const productSchema = z.object({
 
   current_stock: z.coerce.number().int().nonnegative().default(0),
 
-  is_available: z.boolean().default(false),
+  is_available: z.coerce.boolean().default(false),
 
-  image: z
-    .any()
-    .refine((files) => files?.[0]?.size <= 5 * 1024 * 1024, `Max image size is 5MB.`)
-    .refine(
-      (files) => ['image/jpeg', 'image/png', 'image/webp'].includes(files?.[0]?.type),
-      'Only .jpg, .png, .webp formats are supported.'
-    )
+  photoUrls: z
+    .array(z.instanceof(File))
     .optional()
-    .nullable(),
+    .nullable()
+    .refine((files) => {
+      if (!files || files.length === 0) return true;
+      return files.every((file) => ['image/jpeg', 'image/png', 'image/webp'].includes(file?.type));
+    }, 'Only .jpg, .png, .webp formats are supported.')
+    .refine((files) => {
+      if (!files || files.length === 0) return true;
+      return files.every((file) => file?.size <= 5 * 1024 * 1024);
+    }, `Max image size is 5MB.`),
 
   category_id: z.union([
     z.string().transform((val) => parseInt(val)),
