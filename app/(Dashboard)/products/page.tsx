@@ -29,7 +29,7 @@ const page: React.FC<ProductPageProps> = async ({ searchParams }) => {
   const { data } = await getProducts(page, limit);
 
   return (
-    <div className="flex h-full flex-1 flex-col space-y-6 p-8">
+    <div className="flex h-full flex-1 flex-col space-y-6 p-2 sm:p-6">
       <div className="flex flex-col md:flex-row md:justify-between items-center">
         <SectionHeader title="Products Management" subtitle=" Manage your products here" />
         <Link href="/products/new">
@@ -39,10 +39,10 @@ const page: React.FC<ProductPageProps> = async ({ searchParams }) => {
       <div className="flex flex-col space-y-4 border border-dashed border-gray-300 dark:border-gray-500 rounded-lg p-4 bg-gray-100 dark:bg-gray-900">
         {data && data.products && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {data.products.map((product, i) => (
+            {data.products.map((product: any, i) => (
               <ProductCard
                 key={i}
-                imageUrl="/placeholder.svg"
+                imageUrl={product.Picture[0]?.url || '/placeholder.svg'}
                 title={product.product_name}
                 stockQuantity={product.current_stock}
               />

@@ -22,7 +22,7 @@ declare namespace NodeJS {
     AWS_S3_BUCKET: string;
     AWS_S3_REGION: string;
 
-    AWS_CLOUDFRONT_URL: string;
+    AWS_CLOUDFRONT_DISTRIBUTION_DOMAIN: string;
     AWS_CLOUDFRONT_DISTRIBUTION_ID: string;
     AWS_CLOUDFRONT_KEY_PAIR_ID: string;
     AWS_CLOUDFRONT_PRIVATE_KEY: string;
