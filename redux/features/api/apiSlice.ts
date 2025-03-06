@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
  * Base query with a base URL for all requests.
  */
 const baseQuery = fetchBaseQuery({
-  baseUrl: `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1`,
+  baseUrl: `${process.env.NEXT_PUBLIC_API_URL}`,
 });
 
 // Tag types for the API slice.

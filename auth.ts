@@ -5,6 +5,7 @@ import type { NextAuthConfig } from 'next-auth';
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import GitHub from 'next-auth/providers/github';
+import { signOut } from 'next-auth/react';
 
 import { db } from '@/lib/db';
 
@@ -121,6 +122,19 @@ export const config = {
         session.user.email = token.email;
         session.user.role = token.role;
         session.user.accessToken = token.accessToken;
+      }
+
+      if (token.error === 'RefreshAccessTokenError') {
+        // Sign out the user
+        signOut({ redirect: true, callbackUrl: '/' });
+        // Perform server-side cleanup
+        try {
+          await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signout`, {
+            method: 'DELETE',
+          });
+        } catch (error) {
+          console.error('Server-side signout error:', error);
+        }
       }
 
       if (token.error) {

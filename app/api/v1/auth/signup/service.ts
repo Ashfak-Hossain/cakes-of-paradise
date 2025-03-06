@@ -18,7 +18,12 @@ export const createUser = async (user: SignUp) => {
         name,
         email,
         password: hashedPassword,
-        role: { connect: { name: 'Customer' } },
+        role: {
+          connectOrCreate: {
+            where: { name: 'USER' },
+            create: { name: 'USER' },
+          },
+        },
       },
     });
 
