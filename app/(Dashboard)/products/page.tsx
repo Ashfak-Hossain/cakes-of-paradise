@@ -42,6 +42,7 @@ const page: React.FC<ProductPageProps> = async ({ searchParams }) => {
             {data.products.map((product: any, i) => (
               <ProductCard
                 key={i}
+                productId={product.product_id}
                 imageUrl={product.Picture[0]?.url || '/placeholder.svg'}
                 title={product.product_name}
                 stockQuantity={product.current_stock}

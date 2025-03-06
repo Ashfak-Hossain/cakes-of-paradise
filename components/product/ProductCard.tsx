@@ -2,23 +2,21 @@
 
 import { Microwave } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
-interface ProductionCardProps {
+interface ProductCardProps {
+  productId: string;
   imageUrl: string;
   title: string;
   stockQuantity: number;
 }
 
-const ProductionCard: React.FC<ProductionCardProps> = ({ imageUrl, title, stockQuantity }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ productId, imageUrl, title, stockQuantity }) => {
   const onAddProduction = () => {
     console.log('Add Production');
-  };
-
-  const onViewDetails = () => {
-    console.log('View Details');
   };
 
   return (
@@ -36,8 +34,8 @@ const ProductionCard: React.FC<ProductionCardProps> = ({ imageUrl, title, stockQ
             Add Production
             <Microwave />
           </Button>
-          <Button variant="outline" size="sm" onClick={onViewDetails}>
-            View Details
+          <Button variant="outline" size="sm">
+            <Link href={`products/${productId}`}>View Details</Link>
           </Button>
         </div>
       </CardContent>
@@ -45,4 +43,4 @@ const ProductionCard: React.FC<ProductionCardProps> = ({ imageUrl, title, stockQ
   );
 };
 
-export default ProductionCard;
+export default ProductCard;
