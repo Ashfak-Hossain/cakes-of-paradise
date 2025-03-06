@@ -1,6 +1,7 @@
 import { Prisma, Product } from '@prisma/client';
 
 import { AddIngredient, Ingredient } from '@/schemas/ingredient';
+import { ProductSchemaType } from '@/schemas/product';
 import { Purchase } from '@/schemas/purchase';
 import { Supplier } from '@/schemas/supplier';
 
@@ -24,6 +25,11 @@ export interface GetIngredientsReturn extends Omit<Ingredient, 'cost' | 'stock' 
 export interface getProductsReturn {
   products: Product[];
   totalCount: number;
+}
+
+export interface CreateProductParams {
+  productData: ProductSchemaType;
+  photos?: File[];
 }
 
 export interface ProductPageProps {

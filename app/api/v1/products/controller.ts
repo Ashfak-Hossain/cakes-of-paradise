@@ -11,18 +11,24 @@ import { createProduct, getProducts } from '@/app/api/v1/products/service';
 import { productSchema } from '@/schemas/product';
 import { getProductsReturn } from '@/types/types';
 
+/**
+ * ProductController class for handling product-related API requests.
+ */
 class ProductController {
   /**
    * Controller function to get all products.
    *
+   * @static
+   * @async
+   * @function getAllProducts
    * @param {NextRequest} req - The Next.js request object.
    * @returns {Promise<getProductsReturn>} - A promise that resolves to an object containing the list of products and the total count.
+   * @throws {ServerError} - If an error occurs during the process.
+   *
    * @example
    * ```ts
    * const { products, totalCount } = await ProductController.getAllProducts(req);
    * ```
-   * @throws {ServerError} If an error occurs during the process.
-   *
    */
   static getAllProducts = async (req: NextRequest): Promise<getProductsReturn> => {
     const limit = parseInt(req.nextUrl.searchParams.get('limit') || DEFAULT_LIMIT);
@@ -47,11 +53,22 @@ class ProductController {
   };
 
   /**
-   * * Create a new product
-   * @param req
-   * @returns
+   * Controller function to create a new product.
+   *
+   * @static
+   * @async
+   * @function createProduct
+   * @param {NextRequest} request - The Next.js request object containing form data.
+   * @returns {Promise<any>} - A promise that resolves to the created product object.
+   * @throws {ValidationError} - If the request body fails validation against the product schema.
+   * @throws {ServerError} - If an error occurs during the process.
+   *
+   * @example
+   * ```ts
+   * const product = await ProductController.createProduct(request);
+   * ```
    */
-  static createProduct = async (request: NextRequest) => {
+  static createProduct = async (request: NextRequest): Promise<any> => {
     try {
       const formData = await request.formData();
 

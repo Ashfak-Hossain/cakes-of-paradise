@@ -7,8 +7,37 @@ import { getSignedCloudfrontUrl } from '@/aws/Cloudfront';
 import { deleteObjectFromS3 } from '@/aws/S3';
 import { db } from '@/lib/db';
 import { ProductSchemaType } from '@/schemas/product';
-import { getProductsReturn } from '@/types/types';
+import { CreateProductParams, getProductsReturn } from '@/types/types';
 
+/**
+ * Retrieves a paginated list of products from the database, including their cover images,
+ * and generates signed CloudFront URLs for those images.
+ *
+ * @async
+ * @function getProducts
+ * @param {number} limit - The maximum number of products to retrieve per page.
+ * @param {number} page - The page number to retrieve.
+ * @returns {Promise<{ products: Product[], totalCount: number }>} - A promise that resolves to an object containing:
+ * - `products`: An array of product objects, where each product includes its cover image with a signed CloudFront URL.
+ * - `totalCount`: The total number of products in the database.
+ * @throws {AppError} - Thrown for invalid input parameters (e.g., limit or page <= 0).
+ * @throws {DatabaseError} - Thrown for errors during database operations.
+ * @throws {Error} - Thrown for errors during CloudFront URL generation.
+ *
+ * @example
+ * // Example usage:
+ * async function fetchProducts(page: number, limit: number) {
+ * try {
+ * const { products, totalCount } = await getProducts(limit, page);
+ * console.log('Products:', products);
+ * console.log('Total Count:', totalCount);
+ * } catch (error) {
+ * console.error('Error fetching products:', error);
+ * }
+ * }
+ *
+ * fetchProducts(1, 10); // Fetch the first page with 10 products
+ */
 export const getProducts = async (limit: number, page: number): Promise<getProductsReturn> => {
   try {
     if (limit <= 0 || page <= 0) {
@@ -21,23 +50,22 @@ export const getProducts = async (limit: number, page: number): Promise<getProdu
       take: limit,
       skip: offset,
       orderBy: { product_id: 'asc' },
-      include: { Picture: true },
+      include: { Picture: { where: { cover: true } } },
     });
 
     const totalCount = await db.product.count();
 
-    // Construct Signed CloudFront URLs (assuming Picture.url contains the S3 key)
+    // Construct Signed CloudFront URLs (Picture.url contains the S3 key)
     const productsWithSignedUrls = await Promise.all(
       products.map(async (product) => {
         const signedPictures = await Promise.all(
           product.Picture.map(async (picture) => {
             try {
               const signedUrl = await getSignedCloudfrontUrl(picture.url);
-
               return { ...picture, url: signedUrl };
             } catch (error) {
               console.error('Error generating signed URL for picture:', error);
-              // Handle error, e.g., return a default URL or null
+              //  return a default URL or null
               return { ...picture, url: null };
             }
           })
@@ -52,11 +80,6 @@ export const getProducts = async (limit: number, page: number): Promise<getProdu
     throw new DatabaseError('Error occurred while fetching products', error);
   }
 };
-
-interface CreateProductParams {
-  productData: ProductSchemaType;
-  photos?: File[];
-}
 
 /**
  * Creates a new product with the given data and optional photos.

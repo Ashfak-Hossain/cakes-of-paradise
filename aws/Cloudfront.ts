@@ -29,7 +29,7 @@ export const getSignedCloudfrontUrl = async (s3ObjectKey: string): Promise<strin
 
     return url;
   } catch (error) {
-    console.error('Error generating signed CloudFront URL:', error);
+    // console.error('Error generating signed CloudFront URL:', error);
     throw error;
   }
 };

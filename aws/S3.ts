@@ -10,14 +10,16 @@ interface S3File {
   metadata?: Record<string, string>;
 }
 
-export const putObjectToS3 = async ({ file, key, contentType, metadata }: S3File) => {
+export const putObjectToS3 = async ({ file, key: fileKey, contentType, metadata }: S3File) => {
   try {
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
 
+    const Key = process.env.NODE_ENV === 'development' ? `dev/${fileKey}` : fileKey;
+
     const uploadParams: PutObjectCommandInput = {
       Bucket: process.env.AWS_S3_BUCKET,
-      Key: key || file.name,
+      Key,
       Body: uint8Array,
       ContentType: contentType || file.type,
       Metadata: metadata,
@@ -38,11 +40,13 @@ export const putObjectToS3 = async ({ file, key, contentType, metadata }: S3File
   }
 };
 
-export const deleteObjectFromS3 = async (key: string) => {
+export const deleteObjectFromS3 = async (fileKey: string) => {
   try {
+    const Key = process.env.NODE_ENV === 'development' ? `dev/${fileKey}` : fileKey;
+
     const deleteParams = {
       Bucket: process.env.AWS_S3_BUCKET,
-      Key: key,
+      Key,
     };
 
     const command = new DeleteObjectCommand(deleteParams);

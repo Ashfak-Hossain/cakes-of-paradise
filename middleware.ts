@@ -42,7 +42,7 @@ export default auth(async (request) => {
 
   if (isAdminRoute) {
     const role = await CurrentRole();
-    if (role !== 'Admin') {
+    if (role !== 'USER') {
       return NextResponse.redirect(new URL('/', nextUrl));
     }
     return NextResponse.next();
