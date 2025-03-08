@@ -108,8 +108,8 @@ export const config = {
           const { payload } = await jwtVerify(newAccessToken, secret);
           token.accessTokenExpires = (payload.exp as number) * 1000;
           token.error = undefined;
-        } catch (error) {
-          console.error('Token refresh error: ', error);
+        } catch (_error) {
+          // console.error('Token refresh error: ', error);
           token.error = 'RefreshAccessTokenError';
         }
       }
@@ -124,16 +124,6 @@ export const config = {
         session.user.accessToken = token.accessToken;
       }
 
-      // if (token.error === 'RefreshAccessTokenError') {
-      //   try {
-      //     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signout`, {
-      //       method: 'DELETE',
-      //     });
-      //   } catch (error) {
-      //     console.error('Server-side signout error:', error);
-      //   }
-      // }
-
       if (token.error) {
         session.error = token.error as string;
       }
@@ -144,5 +134,3 @@ export const config = {
 } satisfies NextAuthConfig;
 
 export const { auth, handlers } = NextAuth(config);
-
-//! some auth related problem here.

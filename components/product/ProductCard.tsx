@@ -1,6 +1,6 @@
 'use client';
 
-import { Microwave } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -31,8 +31,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ productId, imageUrl, title, s
         <p className="text-sm text-gray-500 mb-3">Stock: {stockQuantity}</p>
         <div className="flex justify-between items-center mt-3">
           <Button variant="outline" size="sm" onClick={onAddProduction}>
-            Add Production
-            <Microwave />
+            Re Stock
+            <TrendingUp />
           </Button>
           <Button variant="outline" size="sm">
             <Link href={`products/${productId}`}>View Details</Link>
