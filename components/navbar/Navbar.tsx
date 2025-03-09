@@ -6,23 +6,24 @@ import { useTheme } from 'next-themes';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { setIsSidebarCollapsed } from '@/redux/features/global/global';
+import { Separator } from '@/components/ui/separator';
+import { setIsMobileSidebarOpen, setIsSidebarOpen } from '@/redux/features/ui/ui';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-
-import { Separator } from '../ui/separator';
 
 const Navbar = () => {
   const { setTheme, theme } = useTheme();
   const isDarkMode = theme === 'dark';
 
   const dispatch = useAppDispatch();
-  const isSidebarCollapsed = useAppSelector((state) => state.global.isSidebarCollapsed);
+  const isSidebarCollapsed = useAppSelector((state) => state.ui.isMobileSidebarOpen);
+  const isMobileSidebarOpen = useAppSelector((state) => state.ui.isMobileSidebarOpen);
   const toggleSidebar = () => {
-    dispatch(setIsSidebarCollapsed(!isSidebarCollapsed));
+    dispatch(setIsSidebarOpen(!isSidebarCollapsed));
+    dispatch(setIsMobileSidebarOpen(!isMobileSidebarOpen));
   };
 
   return (
-    <div className="flex items-center justify-between px-9 py-5 backdrop-blur-md rounded-lg">
+    <div className="flex items-center justify-between md:px-9 py-3 md:py-5 backdrop-blur-md rounded-lg">
       {/* LEFT SIDE */}
       <div className="flex items-center gap-5 h-5">
         <div

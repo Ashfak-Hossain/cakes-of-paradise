@@ -31,12 +31,12 @@ export function NavMain({
     }[];
   }[];
 }) {
-  const isSidebarCollapsed = useAppSelector((state) => state.global.isSidebarCollapsed);
+  const isSidebarOpen = useAppSelector((state) => state.ui.isSidebarOpen);
 
   return (
     <SidebarGroup>
       <SidebarGroupLabel className="text-sm">Application</SidebarGroupLabel>
-      <SidebarMenu className={cn(isSidebarCollapsed ? 'space-y-1' : 'space-y-4')}>
+      <SidebarMenu className={cn(isSidebarOpen ? 'space-y-1' : 'space-y-4')}>
         {items.map((item) => (
           <Collapsible
             key={item.title}
@@ -49,7 +49,7 @@ export function NavMain({
                 <SidebarMenuButton tooltip={item.title} size="lg">
                   {item.icon && (
                     <div>
-                      <item.icon className={cn('size-6', isSidebarCollapsed && 'size-5')} />
+                      <item.icon className={cn('size-6', isSidebarOpen && 'size-5')} />
                     </div>
                   )}
                   <span>{item.title}</span>

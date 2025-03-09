@@ -1,19 +1,21 @@
 'use client';
 
 import {
-  BookOpen,
-  Bot,
   Cake,
+  ChartSpline,
+  ClipboardList,
   Frame,
   LifeBuoy,
-  MapPin,
   PieChart,
   Send,
   Settings2,
+  Users,
+  Warehouse,
 } from 'lucide-react';
 import Link from 'next/link';
 
 import { NavMain } from '@/components/sidebar/nav-main';
+import { Separator } from '@/components/ui/separator';
 import {
   Sidebar,
   SidebarContent,
@@ -23,6 +25,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
+import { useAppSelector } from '@/redux/hooks';
 
 const data = {
   user: {
@@ -54,9 +58,20 @@ const data = {
       ],
     },
     {
+      title: 'Inventory',
+      url: '/inventory',
+      icon: Warehouse,
+      isActive: false,
+      items: [
+        { title: 'Inventory List', url: '/inventory' },
+        { title: 'Stock Adjustments', url: '/inventory/adjust' },
+        { title: 'Reports', url: '/inventory/reports' },
+      ],
+    },
+    {
       title: 'Orders',
       url: '/orders',
-      icon: BookOpen,
+      icon: ClipboardList,
       isActive: false,
       items: [
         { title: 'Order List', url: '/orders' },
@@ -66,7 +81,7 @@ const data = {
     {
       title: 'Customers',
       url: '/customers',
-      icon: Bot,
+      icon: Users,
       isActive: false,
       items: [
         { title: 'Customer List', url: '/customers' },
@@ -74,20 +89,9 @@ const data = {
       ],
     },
     {
-      title: 'Inventory',
-      url: '/inventory',
-      icon: MapPin,
-      isActive: false,
-      items: [
-        { title: 'Inventory List', url: '/inventory' },
-        { title: 'Stock Adjustments', url: '/inventory/adjust' },
-        { title: 'Reports', url: '/inventory/reports' },
-      ],
-    },
-    {
       title: 'Reports',
       url: '/reports',
-      icon: Settings2,
+      icon: ChartSpline,
       isActive: false,
       items: [
         { title: 'Sales Reports', url: '/reports/sales' },
@@ -114,15 +118,17 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const isSidebarOpen = useAppSelector((state) => state.ui.isSidebarOpen);
+
   return (
-    <Sidebar collapsible="icon" variant="inset" {...props}>
+    <Sidebar collapsible="icon" variant="inset" {...props} className="ml-2">
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem className="">
+          <SidebarMenuItem className="my-3">
             <SidebarMenuButton size="lg" asChild>
               <Link href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-rose-500 text-foreground">
-                  <Cake className="size-5" />
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-indigo-300">
+                  <Cake className="size-6" />
                 </div>
                 <div className="grid flex-1 text-left text-base leading-tight">
                   <span className="truncate font-semibold">Cakes of Paradise</span>
@@ -133,11 +139,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+      <Separator />
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <div className="mb-10">
+        <div className={cn('mb-10', !isSidebarOpen && 'hidden')}>
           <p className="text-center text-gray-500 dark:text-gray-400">&copy; 2025 Berlin</p>
         </div>
       </SidebarFooter>

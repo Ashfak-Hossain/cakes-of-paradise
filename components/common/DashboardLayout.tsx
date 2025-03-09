@@ -4,23 +4,18 @@ import { usePathname } from 'next/navigation';
 
 import Navbar from '@/components/navbar/Navbar';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
-import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { useAppSelector } from '@/redux/hooks';
 import { DOCS_PATH } from '@/routes';
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
-  const isSidebarCollapsed = useAppSelector((state) => state.global.isSidebarCollapsed);
-
-  console.log(isSidebarCollapsed);
 
   if (DOCS_PATH.some((path) => pathname.startsWith(path))) {
     return <>{children}</>;
   }
 
   return (
-    <SidebarProvider open={isSidebarCollapsed}>
+    <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
         {/* <header className="flex h-16 shrink-0 items-center gap-2">

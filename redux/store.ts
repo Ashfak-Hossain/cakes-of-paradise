@@ -4,8 +4,8 @@ import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 
 import { apiSlice } from '@/redux/features/api/apiSlice';
 import { drawersSlice } from '@/redux/features/drawers/drawersSlice';
-import globalReducer from '@/redux/features/global/global';
 import { ingredientSlice } from '@/redux/features/ingredients/ingredientsSlice';
+import uiReducer from '@/redux/features/ui/ui';
 
 /* REDUX PERSISTENCE */
 const createNoopStorage = () => {
@@ -27,12 +27,12 @@ const storage = typeof window === 'undefined' ? createNoopStorage() : createWebS
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['global'],
+  whitelist: ['ui'],
 };
 
 /* REDUX ROOT REDUCER */
 const rootReducer = combineReducers({
-  global: globalReducer,
+  ui: uiReducer,
   ingredients: ingredientSlice.reducer,
   drawers: drawersSlice.reducer,
   [apiSlice.reducerPath]: apiSlice.reducer,
