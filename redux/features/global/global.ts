@@ -5,7 +5,7 @@ export interface InitialStateTypes {
 }
 
 const initialState: InitialStateTypes = {
-  isSidebarCollapsed: true,
+  isSidebarCollapsed: false,
 };
 
 export const globalSlice = createSlice({

@@ -3,19 +3,20 @@ import {
   Blocks,
   CircleDollarSign,
   Clipboard,
-  Layout,
+  Home,
   SlidersHorizontal,
   User,
 } from 'lucide-react';
 
-export const sidebarLinks = [
-  { href: '/dashboard', icon: Layout, label: 'Dashboard' },
-  { href: '/inventory', icon: Archive, label: 'Inventory' },
-  { href: '/products', icon: Clipboard, label: 'Products' },
-  { href: '/categories', icon: Blocks, label: 'Categories' },
-  { href: '/users', icon: User, label: 'Users' },
-  { href: '/settings', icon: SlidersHorizontal, label: 'Settings' },
-  { href: '/expenses', icon: CircleDollarSign, label: 'Expenses' },
+
+export const sidebarData = [
+  { url: '/dashboard', icon: Home, title: 'Dashboard' },
+  { url: '/inventory', icon: Archive, title: 'Inventory' },
+  { url: '/products', icon: Clipboard, title: 'Products' },
+  { url: '/categories', icon: Blocks, title: 'Categories' },
+  { url: '/users', icon: User, title: 'Users' },
+  { url: '/settings', icon: SlidersHorizontal, title: 'Settings' },
+  { url: '/expenses', icon: CircleDollarSign, title: 'Expenses' },
 ];
 
 export const measurement_units = [

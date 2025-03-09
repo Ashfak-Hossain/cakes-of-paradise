@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 
-import DashboardLayout from '@/components/common/Wrapper';
+import DashboardLayout from '@/components/common/DashboardLayout';
 
 export const metadata: Metadata = {
   title: 'Cakes of Paradise',

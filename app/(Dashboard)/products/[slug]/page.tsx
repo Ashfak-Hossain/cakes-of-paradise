@@ -59,7 +59,7 @@ const Page: React.FC<Props> = async ({ params }) => {
   );
 
   return (
-    <div className="max-w-7xl py-10 px-4 sm:px-6 lg:px-8">
+    <>
       <h2 className="text-4xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
         {product_name}
       </h2>
@@ -75,7 +75,7 @@ const Page: React.FC<Props> = async ({ params }) => {
         totalSales={totalSales}
         totalSold={totalSold}
       />
-    </div>
+    </>
   );
 };
 
