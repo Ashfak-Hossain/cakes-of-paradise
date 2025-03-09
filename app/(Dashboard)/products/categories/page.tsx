@@ -13,7 +13,7 @@ const page = () => {
           <Link href="/products">Back to Products</Link>
         </Button>
       </div>
-      <div className="flex flex-col space-y-4 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-900">
+      <div className="flex flex-col space-y-4 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 bg-secondary">
         <NewCategoryForm />
       </div>
     </div>
