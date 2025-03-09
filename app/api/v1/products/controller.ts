@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 
-import { DEFAULT_LIMIT, DEFAULT_PAGE } from '@/app/(Dashboard)/products/page';
+import { DEFAULT_LIMIT, DEFAULT_PAGE } from '@/app/(Dashboard)/dashboard/products/page';
 import {
   AppError,
   DatabaseError,
