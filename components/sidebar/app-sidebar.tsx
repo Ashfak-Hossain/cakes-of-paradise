@@ -48,6 +48,7 @@ const data = {
       items: [
         { title: 'Product List', url: '/dashboard/products' },
         { title: 'Add Product', url: '/dashboard/products/add' },
+        // { title: 'Edit Product', url: '/dashboard/products/edit' },
         { title: 'Categories', url: '/dashboard/products/categories' },
       ],
     },

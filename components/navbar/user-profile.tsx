@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { CircleHelp, LogOut, Settings, User } from 'lucide-react';
+import { CircleHelp, LogOut, Settings, User } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,13 +11,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 
 const UserProfile = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="cursor-pointer">
-        <Avatar className="ring-2 ring-offset-[2px] ring-offset-background size-8 dark:ring-gray-200 ring-gray-500">
+        <Avatar className="size-8 ring-2 ring-ring ring-offset-[2px] ring-offset-background">
           <AvatarImage src="/cop.jpg" />
           <AvatarFallback>COP</AvatarFallback>
         </Avatar>
@@ -36,8 +36,8 @@ const UserProfile = () => {
           <DropdownMenuItem>
             <CircleHelp /> Help
           </DropdownMenuItem>
-          <DropdownMenuItem className="flex items-center gap-2 text-rose-500 font-semibold hover:bg-gray-100 hover:text-rose-300 dark:hover:bg-gray-800 dark:hover:text-rose-700 px-3 py-2">
-            <LogOut className="w-4 h-4" /> Logout
+          <DropdownMenuItem className="font-semibold text-rose-500">
+            <LogOut /> Sign out
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

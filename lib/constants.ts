@@ -8,7 +8,6 @@ import {
   User,
 } from 'lucide-react';
 
-
 export const sidebarData = [
   { url: '/dashboard', icon: Home, title: 'Dashboard' },
   { url: '/inventory', icon: Archive, title: 'Inventory' },
@@ -44,4 +43,17 @@ export const API_ERROR = {
     error: 'SERVER_ERROR',
     message: 'An unexpected error occurred. Please try again later.',
   },
+};
+
+export const PAGE_ROUTE = {
+  DASHBOARD: '/dashboard',
+  INVENTORY: '/dashboard/inventory',
+  PRODUCTS: '/dashboard/products',
+  CATEGORIES: '/dashboard/categories',
+  USERS: '/users',
+  SETTINGS: '/settings',
+  EXPENSES: '/expenses',
+
+  ADD_NEW_PRODUCT: '/dashboard/products/add',
+  EDIT_PRODUCT: '/dashboard/products/edit',
 };

@@ -1,22 +1,27 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle } from 'lucide-react';
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle } from "lucide-react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
-import { CustomFormField } from '@/components/common/CustomFormField';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
-import { useGetCategoriesQuery } from '@/redux/features/api/categories/categoriesApiSlice';
-import { useCreateProductMutation } from '@/redux/features/api/products/productsApiSlice';
-import { productSchema, ProductSchemaType } from '@/schemas/product';
+import { CustomFormField } from "@/components/common/CustomFormField";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { useGetCategoriesQuery } from "@/redux/features/api/categories/categoriesApiSlice";
+import { useCreateProductMutation } from "@/redux/features/api/products/productsApiSlice";
+import { productSchema, ProductSchemaType } from "@/schemas/product";
 
 const ProductForm = () => {
-  const { data: categories, isLoading: isCategoriesLoading, isError } = useGetCategoriesQuery();
-  const [createProduct, { isLoading: isProductCreating }] = useCreateProductMutation();
+  const {
+    data: categories,
+    isLoading: isCategoriesLoading,
+    isError,
+  } = useGetCategoriesQuery();
+  const [createProduct, { isLoading: isProductCreating }] =
+    useCreateProductMutation();
 
   const categoryOptions = categories?.data
     ? categories.data.map((category) => ({
@@ -26,8 +31,8 @@ const ProductForm = () => {
     : [];
 
   const defaultValues: ProductSchemaType = {
-    product_name: '',
-    description: '',
+    product_name: "",
+    description: "",
     price: 0,
     cost_to_make: 0,
     current_stock: 0,
@@ -39,22 +44,22 @@ const ProductForm = () => {
   const form = useForm<ProductSchemaType>({
     resolver: zodResolver(productSchema),
     defaultValues,
-    mode: 'onBlur',
+    mode: "onBlur",
   });
 
   useEffect(() => {
     if (isError) {
-      toast.error('Failed to fetch categories');
+      toast.error("Failed to fetch categories");
     }
   }, [isError]);
 
   const onSubmit = async (values: ProductSchemaType) => {
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
-      if (key === 'photoUrls') {
+      if (key === "photoUrls") {
         const files = value as File[];
         files.forEach((file: File) => {
-          formData.append('photos', file);
+          formData.append("photos", file);
         });
       } else if (Array.isArray(value)) {
         formData.append(key, JSON.stringify(value));
@@ -79,7 +84,7 @@ const ProductForm = () => {
             </AlertDescription>
           </Alert>
         )}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
+        <div className="grid grid-cols-1 gap-4 p-2 md:grid-cols-2">
           {/* Left Column */}
           <div className="space-y-4">
             <CustomFormField
@@ -141,7 +146,7 @@ const ProductForm = () => {
           </div>
         </div>
         <Button type="submit" disabled={isProductCreating}>
-          {isProductCreating ? 'Adding Product' : 'Add Product'}
+          {isProductCreating ? "Adding Product" : "Add Product"}
         </Button>
       </form>
     </Form>
